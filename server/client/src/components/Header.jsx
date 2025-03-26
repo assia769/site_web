@@ -12,10 +12,19 @@ import Box from '@mui/material/Box'
 import { useState } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import DynamicFeedRoundedIcon from '@mui/icons-material/DynamicFeedRounded';
 
 export default function Header(){
     
     const [age, setAge] = useState('');
+    const [value, setValue] = useState('recents');
+
+    const handleChangenavigation = (event, newValue) => {
+        setValue(newValue);
+    };
 
     const handleChange = (event) => {
         setAge(event.target.value);
@@ -23,20 +32,49 @@ export default function Header(){
 
 
     return (
-        <div className="header"  >
-            <Grid container spacing={2} sx={{boxShadow:10 ,height: '60px', alignItems:'center'}}>
-                <Grid item xs={12} sm={12} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' ,height:'100%'}}>
+        <div className="header" >
+            <Grid container spacing={2} sx={{boxShadow:10 ,height: '50px', alignItems:'center'}}>
+                <Grid item xs={12} sm={12} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' ,height:'100%',paddingX: '20px'}}>
                     <Grid item >
-                    <img src={logo} alt="aji ntaybo" style={{ width: '80px', height: 'auto'}} />
+                    <img src={logo} alt="aji ntaybo" style={{ width: '65px', height: 'auto'}} />
                     </Grid>
                 
-                <Grid item sx={{ display:'flex' , alignItems:'center' ,justifyContent:'center',marginLeft:'10px'}}>
+                {/* navigation */}
+                <Grid item sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)',maxWidth:700,minWidth:200}}>
+                    <Box sx={{maxWidth:700,minWidth:200}}>
+                    <BottomNavigation sx={{ width: 600 ,backgroundColor: 'transparent','& .MuiBottomNavigationAction-root':{'&.Mui-selected': {color: '#2B2B2B'}}}} value={value} onChange={handleChangenavigation}>
+                        
+                        <BottomNavigationAction
+                            label="Profile"
+                            value="Profile"
+                            icon={<Avatar sx={{width:24,height:24,fontSize:'0.75rem',color:'#B22222',backgroundColor:'#2B2B2B',transition: '0.3s','&:hover': {backgroundColor: '#B22222',color: '#2B2B2B',boxShadow:10}}}>AN</Avatar>}
+                        />
+                        
+                        <BottomNavigationAction 
+                            label="Home" 
+                            value="Home" 
+                            icon={<HomeRoundedIcon />} 
+                        />
+                        
+                        <BottomNavigationAction
+                            label="My posts"
+                            value="My posts"
+                            icon={<DynamicFeedRoundedIcon/>}
+                        />
+
+                    </BottomNavigation>
+                    </Box>
+                </Grid>
+
+                {/*search*/}
+                
+                <Grid item sx={{ display:'flex' , alignItems:'center' ,justifyContent:'center',marginLeft:'10px',position:'absolute',left:'70%'}}>
                     <Paper
                         component="form"
-                        sx={{ p: '1px 1px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',width: '100%', maxWidth: '1200px', minWidth: '30px', backgroundColor:'#2B2B2B', color:'#E6E6E6','&:hover':{boxShadow:10}}}
+                        sx={{ p: '1px 1px', display: 'flex', alignItems: 'center',width: '300px', maxWidth: '250px', minWidth: '10px', backgroundColor:'#2B2B2B', color:'#E6E6E6',height:'40px','&:hover':{boxShadow:10}}}
                     >
                         <InputBase
-                            sx={{ ml: 2, flex: 1 , width:'1200px' ,color:'#E6E6E6', height:'100%'}}
+                            sx={{fontSize:'14px', ml: 2, flex: 1 , width:'1200px' ,color:'#E6E6E6', height:'100%'}}
                             placeholder="Ach ghantaybo lyoum ?"
                             inputProps={{ 'aria-label': 'Ach ghantaybo lyoum ?' }}
                         />
@@ -44,16 +82,17 @@ export default function Header(){
                             <SearchIcon />
                         </IconButton>
                     </Paper>
-                    <Box sx={{ minWidth: 120 , alignItems:'center'}}>
+                    {/* select  */}
+                    <Box sx={{ minWidth: 100 }}>
                         <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label" sx={{color:'gray','&.Mui-focused': {color: 'gray',}}}>Choix</InputLabel>
+                            <InputLabel id="demo-simple-select-label" sx={{color:'gray',fontSize:'14px',height:'40px','&.Mui-focused': {color: 'gray',}}}>Choix</InputLabel>
                             <Select
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
                                 value={age}
                                 label="choie du recherche"
                                 onChange={handleChange}
-                                sx={{height: '49px',backgroundColor:'#2B2B2B',color: '#E6E6E6',transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
+                                sx={{height: '40px',fontSize:'14px',backgroundColor:'#2B2B2B',color: '#E6E6E6',transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
                                         '& .MuiSelect-icon': {  
                                             color: '#E6E6E6'
                                         },
@@ -96,18 +135,12 @@ export default function Header(){
                                 <MenuItem value={20}>Descripiton</MenuItem>
                             </Select>
                         </FormControl>
+                        
                     </Box>
                 </Grid>
                 
-                <Grid item sx={{display:'flex',flexDirection:'row',marginLeft:'10px'}}>
-                    <Avatar sx={{color:'#8B0000',backgroundColor:'#2B2B2B',transition: '0.3s','&:hover': {backgroundColor: '#8B0000',color: '#2B2B2B',boxShadow:10}}}>AN</Avatar>
-                    <div style={{display:'flex',justifyContent:'center',flexDirection:'column', marginLeft:'5px'}}>
-                      <span style={{color:'#E6E6E6'}}>Aji Ntaybo</span>
-                      <span style={{color:'#E6E6E6',fontSize:'10px'}}>ID : 12345</span>
-                    </div>
-                </Grid>
             </Grid>
-            </Grid>
+           </Grid>
         </div>
     );
 }
