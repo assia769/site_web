@@ -9,22 +9,30 @@ import Typography from '@mui/material/Typography';
 import GradeIcon from '@mui/icons-material/Grade';
 import CardHeader from '@mui/material/CardHeader';
 import cake from '../assets/lazycatecake.webp'
-import { Button } from '@mui/material';
+import { Button, Divider } from '@mui/material';
 import { useState } from 'react';
 import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
 import ButtonGroup from '@mui/material/ButtonGroup';
-
+import ModeCommentIcon from '@mui/icons-material/ModeComment';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import ReportIcon from '@mui/icons-material/Report';
+import Comments from './comments';
+import CommentInput from './CommentInput';
 
 
 export default function Post() {
   const [showFullText, setShowFullText] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   
 
   const handleToggleText = () => {
     setShowFullText(!showFullText);
+  };
+
+  const handleToggleComments = () => {
+    setShowComments(!showComments);
   };
 
   const fullText = `Ingredients for Lazy Cat Cake
@@ -80,6 +88,8 @@ This dessert is proof that delicious treats don’t have to be complicated. With
                                             avatar={<Avatar className="propic3">AI</Avatar>}
                                             title="Aymen Igri"
                                             subheader="September 14, 2016"
+                                            className='userinfo'
+                                            sx={{color:'white'}}
                                         />
                                     </Grid>
                                     <Grid size={2} className='grad_result'>
@@ -120,11 +130,12 @@ This dessert is proof that delicious treats don’t have to be complicated. With
                     '& .MuiButton-root': {
                       flex: 1,
                       justifyContent: 'center',
-                      color: '#B22222',
-                      backgroundColor: "#2B2B2B",
+                      color: '#E6E6E6',
+                      background:'transparent',
                       transition: '0.3s',
                       outline: 'none',
                       border: 'none',
+                      marginBottom:'-3%',
                       '&:hover': {
                         color: '#2B2B2B',
                         backgroundColor: "#B22222",
@@ -141,15 +152,35 @@ This dessert is proof that delicious treats don’t have to be complicated. With
                               <Rating name="half-rating" defaultValue={2.5} precision={0.5} />
                             </Stack>
                             </Button>
-                            <Button >Two</Button>
-                            <Button>Three</Button>
-                            <Button>Three</Button>
+                            <Button onClick={handleToggleComments}>
+                                <ModeCommentIcon/> 
+                                Comment
+                            </Button>
+                            <Button >
+                                <BookmarkIcon/> 
+                                Save
+                            </Button>
+                            <Button >
+                                <ReportIcon/> 
+                                Report
+                            </Button>
                           </ButtonGroup>
                           </Typography>
+                          {showComments && (
+        <>
+        <div className='commentchoi'>
+        <Divider />
+
+          <CommentInput />
+          <Comments />
+          </div>
+        </>
+      )}
                       </CardContent>
                   </React.Fragment>
               </Card>
           </Box>
+          
       </>
   );
 }

@@ -28,7 +28,7 @@ export default function NewPostFeald(){
                                 </Typography>
                         </CardContent>
                 </Card>
-        </Box>
+            </Box>
         </>
     );
 }

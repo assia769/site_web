@@ -16,6 +16,7 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DynamicFeedRoundedIcon from '@mui/icons-material/DynamicFeedRounded';
+import { Link } from 'react-router-dom';
 
 export default function Header(){
     
@@ -48,18 +49,24 @@ export default function Header(){
                             label="Profile"
                             value="Profile"
                             icon={<Avatar sx={{width:24,height:24,fontSize:'0.75rem',color:'#B22222',backgroundColor:'#2B2B2B',transition: '0.3s','&:hover': {backgroundColor: '#B22222',color: '#2B2B2B',boxShadow:10}}}>AN</Avatar>}
+                            component={Link}
+                            to="/profile"
                         />
                         
                         <BottomNavigationAction 
                             label="Home" 
                             value="Home" 
                             icon={<HomeRoundedIcon />} 
+                            component={Link}
+                            to="/home"
                         />
                         
                         <BottomNavigationAction
                             label="My posts"
                             value="My posts"
                             icon={<DynamicFeedRoundedIcon/>}
+                            component={Link}
+                            to="/myposts"
                         />
 
                     </BottomNavigation>
