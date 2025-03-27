@@ -39,13 +39,13 @@ export default function Header(){
     return (
         <div className="header" >
             <Grid container spacing={2} sx={{boxShadow:10 ,height: '50px', alignItems:'center'}}>
-                <Grid item xs={12} sm={12} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' ,height:'100%',paddingX: '20px'}}>
-                    <Grid item >
+                <Grid xs={12} sm={12} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' ,height:'100%',paddingX: '20px'}}>
+                    <Grid xs={2} >
                     <img src={logo} alt="aji ntaybo" style={{ width: '65px', height: 'auto'}} />
                     </Grid>
                 
                 {/* navigation */}
-                <Grid item sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)',maxWidth:700,minWidth:200}}>
+                <Grid  sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)',maxWidth:700,minWidth:200}}>
                     <Box sx={{maxWidth:700,minWidth:200}}>
                     <BottomNavigation sx={{ width: 600 ,backgroundColor: 'transparent','& .MuiBottomNavigationAction-root':{'&.Mui-selected': {color: '#2B2B2B'}}}} value={value} onChange={handleChangenavigation}>
                         
@@ -79,7 +79,7 @@ export default function Header(){
 
                 {/*search*/}
                 
-                <Grid item sx={{ display:'flex' , alignItems:'center' ,justifyContent:'center',marginLeft:'10px',position:'absolute',left:'70%'}}>
+                <Grid  sx={{ display:'flex' , alignItems:'center' ,justifyContent:'center',marginLeft:'10px',position:'absolute',left:'70%'}}>
                     <Paper
                         component="form"
                         sx={{ p: '1px 1px', display: 'flex', alignItems: 'center',width: '300px', maxWidth: '250px', minWidth: '10px', backgroundColor:'#2B2B2B', color:'#E6E6E6',height:'40px','&:hover':{boxShadow:10}}}

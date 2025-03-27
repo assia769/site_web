@@ -40,6 +40,72 @@
     height: 73px;
 }
 
+.newpost_text{
+    display: flex;
+    flex-direction: column;
+}
+
+/* Styling for the TextField container */
+.text_addpost {
+    background-color: #8B0000; /* Background color for the input field */
+    color: #E6E6E6; /* Text color */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px; /* Padding inside the input field */
+    transition: all 0.3s ease;
+    margin-bottom: 5% !important; /* Smooth transition for hover and focus effects */
+}
+
+/* Styling for the label */
+.text_addpost .MuiInputLabel-root {
+    color: #E6E6E6 !important; /* Label color */
+}
+
+/* Styling for the input field when focused */
+.text_addpost .MuiFilledInput-root.Mui-focused {
+    background-color: #5a0909 !important; /* Background color when focused */
+    color: #E6E6E6 !important; /* Text color when focused */
+}
+
+/* Styling for the underline */
+.text_addpost .MuiFilledInput-underline:before {
+    border-bottom: none !important; /* Default underline color */
+}
+
+.text_addpost .MuiFilledInput-underline:hover:before {
+    border-bottom: none !important ; /* Hover underline color */
+}
+
+.text_addpost .MuiFilledInput-underline:after {
+    border-bottom: none !important  ; /* Focus underline color */
+}
+
+/* Add hover effect for the input field */
+.text_addpost:hover {
+    background-color: #5a0909; /* Background color on hover */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow on hover */
+    color: white;
+}
+
+.newPost_window{
+    background-color: #8B0000;
+    color: #E6E6E6;
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    gap: 16px; /* Add space between elements */
+    padding: 16px;
+    width: 500px;
+}
+
+.button_addpost{
+    color: #E6E6E6 !important;
+    transition: 0.3s;
+}
+
+.button_addpost:hover{
+    color: #2B2B2B !important;
+    background-color: #B22222 !important    ;
+}
+
 .addPost{
     padding-right: 15px;
 }
@@ -157,7 +223,7 @@
 }
 
 .comment_feald{
-    flex: 1; /* Allow TextField to take up available space */
+    flex: 1; 
     margin-right: 10px;
     display: flex;
     justify-content: center !important;

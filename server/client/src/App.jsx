@@ -1,5 +1,5 @@
 import './App.css'
-import Header from './components/header'
+import Header from './components/Header'
 import Body from './components/Body'
 import { Routes , Route } from 'react-router-dom'
 import { MainUserContext } from './components/context/MainUserContext'

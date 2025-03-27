@@ -21,7 +21,11 @@ import CommentInput from './CommentInput';
 import { useContext } from 'react';
 import { UsersContext } from './context/UsersContext';
 import { PostsContext } from './context/PostsContext';
-import { CommentsContext } from './context/CommentsContext';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
 
 
 
@@ -31,8 +35,15 @@ export default function Post() {
   let Posts = useContext(PostsContext);
   const [expandedText, setExpandedText] = useState({});
   const [expandedPostId, setExpandedPostId] = useState(null);
+  const [open, setOpen] = useState(false);
 
-  
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleToggleText = (postId) => {
     setExpandedText((prev) => ({
@@ -54,13 +65,12 @@ export default function Post() {
     const postUser = Users.find((user) => user.id === post.iduser);
     const isTextExpanded = expandedText[post.id] || false;
     const truncatedText = post.description.slice(0, 200) + '...';
-    console.log(post);
     return (
-      <Box>
+      <Box key={post.id}>
               <Card variant="outlined" className="post">
                   <React.Fragment>
                       <CardContent>
-                          <Typography gutterBottom>
+                          
                             
                                 <Grid container spacing={2}>
                                   
@@ -84,10 +94,10 @@ export default function Post() {
                                       <Typography variant="h4" component="h1" className="post_title">
                                           {post.title}
                                       </Typography>
-                                      <p>{isTextExpanded ? post.description : truncatedText}</p>
-                      <Button variant='text' onClick={() => handleToggleText(post.id)} sx={{ color: 'gray' }}>
-                        {isTextExpanded ? 'See Less' : 'See More'}
-                      </Button>
+                                      <Typography component="div">{isTextExpanded ? post.description : truncatedText}</Typography>
+                                        <Button variant='text' onClick={() => handleToggleText(post.id)} sx={{ color: 'gray' }}>
+                                          {isTextExpanded ? 'See Less' : 'See More'}
+                                        </Button>
                                     </Grid>
                               
           
@@ -141,19 +151,49 @@ export default function Post() {
                                 <BookmarkIcon/> 
                                 Save
                             </Button>
-                            <Button >
+                            <Button onClick={handleClickOpen}>
                                 <ReportIcon/> 
                                 Report
                             </Button>
                           </ButtonGroup>
-                          </Typography>
+                              <Dialog
+                                        open={open}
+                                        onClose={handleClose}
+                                        aria-labelledby="alert-dialog-title"
+                                        aria-describedby="alert-dialog-description"
+                                    >
+                                        <Box className="newPost_window">
+                                        <DialogTitle id="alert-dialog-title">
+                                        {"Repport"}
+                                        </DialogTitle>
+                                        <Divider />
+                                        <DialogContent>
+                                            <Box className="newpost_text">
+                                                <TextField
+                                                    id="outlined-multiline-static"
+                                                    label="what's the problem ?"
+                                                    multiline
+                                                    rows={6}
+                                                    variant="filled"
+                                                    className='text_addpost'
+                                                />
+                                            </Box>
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={handleClose} className='button_addpost'>Cancel</Button>
+                                            <Button onClick={handleClose} className='button_addpost 'autoFocus>
+                                                Repport 
+                                            </Button>
+                                        </DialogActions>
+                                        </Box>
+                                    </Dialog>
                           {expandedPostId === post.id && (
-                  <div className='commentchoi'>
-                    <Divider />
-                    <CommentInput />
-                    <Comment post={post} />
-                  </div>
-                )}
+                              <div className='commentchoi'>
+                                <Divider />
+                                <CommentInput />
+                                <Comment post={post} />
+                              </div>
+                          )}
                       </CardContent>
                   </React.Fragment>
               </Card>
