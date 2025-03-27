@@ -5,12 +5,16 @@ import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid2';
 import Avatar from '@mui/material/Avatar';
+import { useContext } from 'react';
+import { MainUserContext } from './context/MainUserContext';
 
 
 import '../style/Body.css';
 
 
 export default function NewPostFeald(){
+
+    let MainUser = useContext(MainUserContext);
     return(
         <>
             <Box>
@@ -19,7 +23,7 @@ export default function NewPostFeald(){
                                 <Typography gutterBottom className='addPost'>
                                     <Grid container spacing={2}>
                                         <Grid size={1}>
-                                            <Avatar className='propic2'>AN</Avatar>   
+                                            <Avatar className='propic2'>{MainUser.name[0]}</Avatar>   
                                         </Grid>
                                         <Grid size={11} className="text">
                                           Chi wasfa jdida 3awtani ?      

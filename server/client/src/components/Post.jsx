@@ -8,7 +8,6 @@ import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import GradeIcon from '@mui/icons-material/Grade';
 import CardHeader from '@mui/material/CardHeader';
-import cake from '../assets/lazycatecake.webp'
 import { Button, Divider } from '@mui/material';
 import { useState } from 'react';
 import Rating from '@mui/material/Rating';
@@ -17,65 +16,47 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ReportIcon from '@mui/icons-material/Report';
-import Comments from './comments';
+import Comment from './comments';
 import CommentInput from './CommentInput';
+import { useContext } from 'react';
+import { UsersContext } from './context/UsersContext';
+import { PostsContext } from './context/PostsContext';
+import { CommentsContext } from './context/CommentsContext';
+
 
 
 export default function Post() {
-  const [showFullText, setShowFullText] = useState(false);
-  const [showComments, setShowComments] = useState(false);
+
+  let Users = useContext(UsersContext);
+  let Posts = useContext(PostsContext);
+  const [expandedText, setExpandedText] = useState({});
+  const [expandedPostId, setExpandedPostId] = useState(null);
 
   
 
-  const handleToggleText = () => {
-    setShowFullText(!showFullText);
+  const handleToggleText = (postId) => {
+    setExpandedText((prev) => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }));
   };
 
-  const handleToggleComments = () => {
-    setShowComments(!showComments);
+  const handleToggleComments = (postId) => {
+    setExpandedPostId((prevId) => (prevId === postId ? null : postId));
   };
 
-  const fullText = `Ingredients for Lazy Cat Cake
-Cream Cheese Filling:
-200g cream cheese
-250g mascarpone
-3 tablespoons condensed milk
-Base Layer:
-6 slices of shop-bought chocolate loaf cake (each about 1.5 inches thick)
-100ml chocolate milk (store-bought or homemade)
-Chocolate Ganache:
-200g chocolate (dark or milk, depending on preference)
-100ml double cream
-Crispy Topping:
-100g milk chocolate
-80g Coco Pops
-40g cocoa powder
-Instructions for Lazy Cat Cake
-Step 1: Make the Cream Cheese Filling
-In a mixing bowl, combine the cream cheese, mascarpone, and condensed milk. Whisk together until smooth and creamy. Set aside.
+  const handlePosts = Posts.filter((post) => {
+    const postUser = Users.find((user) => user.id === post.iduser);
+    
+    return !!postUser;
+  }).map((post) => {
 
-Step 2: Assemble the Base Layer
-Lay the slices of chocolate loaf cake in a dish, ensuring they are snugly arranged. Pour the chocolate milk evenly over the cake slices to soak them.
-
-Step 3: Add the Cream Cheese Layer
-Spread the prepared cream cheese mixture over the soaked cake layer. Use a spatula or offset spatula to smooth it out evenly. Place the dish in the fridge to chill while you prepare the ganache.
-
-Step 4: Make the Chocolate Ganache
-In a microwave-safe bowl, add the chocolate and double cream. Heat in 30-second intervals, stirring between each until the mixture is silky smooth. Once ready, spread the ganache evenly over the chilled cream cheese layer.
-
-Step 5: Prepare the Crispy Topping
-In a sealed Tupperware container, combine the milk chocolate, Coco Pops, and cocoa powder. Close the lid tightly and give it a good shake to coat the cereal evenly.
-
-Step 6: Final Assembly and Serve
-Sprinkle the crispy topping over the ganache layer, ensuring an even distribution. Slice, serve, and enjoy your Lazy Cat Cake!
-
-This dessert is proof that delicious treats don’t have to be complicated. With its creamy filling, rich chocolate layers, and crunchy topping, it’s no wonder this cake has taken social media by storm! Try it out and let me know if it lives up to the hype.`
-
-  const truncatedText = fullText.slice(0, 200) + '...';
-
-  return (
-      <>
-          <Box>
+    const postUser = Users.find((user) => user.id === post.iduser);
+    const isTextExpanded = expandedText[post.id] || false;
+    const truncatedText = post.description.slice(0, 200) + '...';
+    console.log(post);
+    return (
+      <Box>
               <Card variant="outlined" className="post">
                   <React.Fragment>
                       <CardContent>
@@ -85,28 +66,28 @@ This dessert is proof that delicious treats don’t have to be complicated. With
                                   
                                     <Grid size={10}>
                                         <CardHeader
-                                            avatar={<Avatar className="propic3">AI</Avatar>}
-                                            title="Aymen Igri"
-                                            subheader="September 14, 2016"
+                                            avatar={<Avatar className="propic3">{postUser.name[0]}</Avatar>}
+                                            title={postUser.name}
+                                            subheader={post.date}
                                             className='userinfo'
                                             sx={{color:'white'}}
                                         />
                                     </Grid>
                                     <Grid size={2} className='grad_result'>
                                         <GradeIcon className='star'/>
-                                        <h6>5/5</h6>
+                                        <h6>{post.rating}/5</h6>
                                     </Grid>
                                     <Grid size={5}>
-                                        <img src={cake} alt="cake" className='post_img' />
+                                        <img src={post.pic} alt="cake" className='post_img' />
                                     </Grid>
                                     <Grid size={7} className="title_p">
                                       <Typography variant="h4" component="h1" className="post_title">
-                                          kikat ahmed zwin smiya
+                                          {post.title}
                                       </Typography>
-                                      <p>
-                                          {showFullText ? fullText : truncatedText}
-                                      </p>
-                                      <Button variant='text' onClick={handleToggleText} >{showFullText ? 'See Less' : 'See More'}</Button>
+                                      <p>{isTextExpanded ? post.description : truncatedText}</p>
+                      <Button variant='text' onClick={() => handleToggleText(post.id)} sx={{ color: 'gray' }}>
+                        {isTextExpanded ? 'See Less' : 'See More'}
+                      </Button>
                                     </Grid>
                               
           
@@ -152,7 +133,7 @@ This dessert is proof that delicious treats don’t have to be complicated. With
                               <Rating name="half-rating" defaultValue={2.5} precision={0.5} />
                             </Stack>
                             </Button>
-                            <Button onClick={handleToggleComments}>
+                            <Button onClick={() => handleToggleComments(post.id)}>
                                 <ModeCommentIcon/> 
                                 Comment
                             </Button>
@@ -166,21 +147,23 @@ This dessert is proof that delicious treats don’t have to be complicated. With
                             </Button>
                           </ButtonGroup>
                           </Typography>
-                          {showComments && (
-        <>
-        <div className='commentchoi'>
-        <Divider />
-
-          <CommentInput />
-          <Comments />
-          </div>
-        </>
-      )}
+                          {expandedPostId === post.id && (
+                  <div className='commentchoi'>
+                    <Divider />
+                    <CommentInput />
+                    <Comment post={post} />
+                  </div>
+                )}
                       </CardContent>
                   </React.Fragment>
               </Card>
           </Box>
-          
+    );
+  });
+
+  return (
+      <>
+          {handlePosts}
       </>
   );
 }

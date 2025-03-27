@@ -17,8 +17,12 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DynamicFeedRoundedIcon from '@mui/icons-material/DynamicFeedRounded';
 import { Link } from 'react-router-dom';
+import { useContext } from 'react';
+import { MainUserContext } from './context/MainUserContext';
 
 export default function Header(){
+
+    let MainUser = useContext(MainUserContext);
     
     const [age, setAge] = useState('');
     const [value, setValue] = useState('recents');
@@ -48,7 +52,7 @@ export default function Header(){
                         <BottomNavigationAction
                             label="Profile"
                             value="Profile"
-                            icon={<Avatar sx={{width:24,height:24,fontSize:'0.75rem',color:'#B22222',backgroundColor:'#2B2B2B',transition: '0.3s','&:hover': {backgroundColor: '#B22222',color: '#2B2B2B',boxShadow:10}}}>AN</Avatar>}
+                            icon={<Avatar sx={{width:24,height:24,fontSize:'0.75rem',color:'#B22222',backgroundColor:'#2B2B2B',transition: '0.3s','&:hover': {backgroundColor: '#B22222',color: '#2B2B2B',boxShadow:10}}}>{MainUser.name[0]}</Avatar>}
                             component={Link}
                             to="/profile"
                         />
