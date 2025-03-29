@@ -33,6 +33,7 @@ export default function Post() {
 
   let Users = useContext(UsersContext);
   let Posts = useContext(PostsContext);
+  
   const [expandedText, setExpandedText] = useState({});
   const [expandedPostId, setExpandedPostId] = useState(null);
   const [open, setOpen] = useState(false);

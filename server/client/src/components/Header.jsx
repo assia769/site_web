@@ -15,10 +15,10 @@ import InputLabel from '@mui/material/InputLabel';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import DynamicFeedRoundedIcon from '@mui/icons-material/DynamicFeedRounded';
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
 import { MainUserContext } from './context/MainUserContext';
+import BookmarksIcon from '@mui/icons-material/Bookmarks';
 
 export default function Header(){
 
@@ -66,9 +66,9 @@ export default function Header(){
                         />
                         
                         <BottomNavigationAction
-                            label="My posts"
-                            value="My posts"
-                            icon={<DynamicFeedRoundedIcon/>}
+                            label="saved posts"
+                            value="saved posts"
+                            icon={<BookmarksIcon/>}
                             component={Link}
                             to="/myposts"
                         />

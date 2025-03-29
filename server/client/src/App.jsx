@@ -3,10 +3,13 @@ import Header from './components/Header'
 import Body from './components/Body'
 import { Routes , Route } from 'react-router-dom'
 import { MainUserContext } from './components/context/MainUserContext'
+import Profile from './components/Profile'
+import SavedPosts from './components/SavedPosts'
 
-const user = {
+const mainUser = {
   id:"1",
-  name:"AYMEN IGRI"
+  name:"AYMEN IGRI",
+  age:"23 years"  
 }
 
 function App() {
@@ -14,14 +17,14 @@ function App() {
 
   return (
     <>
-      <MainUserContext.Provider value={user}>
+      <MainUserContext.Provider value={mainUser}>
         <Header />
       </MainUserContext.Provider>
       <Routes>
-        <Route path='/' element={<MainUserContext.Provider value={user}><Body /></MainUserContext.Provider>} /> 
-        <Route path="/home" element={<MainUserContext.Provider value={user}><Body /></MainUserContext.Provider>}/>
-        <Route path='/profile' element={<h1 style={{fontSize:"30px", color:"white"}}>my profile</h1>}/>
-        <Route path='/myposts' element={<h1 style={{fontSize:"30px", color:"white"}}>my posts</h1>}/>
+        <Route path='/' element={<MainUserContext.Provider value={mainUser}><Body /></MainUserContext.Provider>} /> 
+        <Route path="/home" element={<MainUserContext.Provider value={mainUser}><Body /></MainUserContext.Provider>}/>
+        <Route path='/profile' element={<MainUserContext.Provider value={mainUser}><Profile /></MainUserContext.Provider>}/>
+        <Route path='/myposts' element={<MainUserContext.Provider value={mainUser}><SavedPosts /></MainUserContext.Provider>}/>
       </Routes>
     </>
   )
