@@ -15,7 +15,25 @@ const posts = [
         pic: cake,
         rating: "5",
         description: "kika zwina kika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwina",
-    }
+    },
+    {
+        id: "1",
+        iduser: "1",
+        date: "2025/07/24",
+        title: "kikat ahmed zin smiya",
+        pic: cake,
+        rating: "5",
+        description: "kika zwina kika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwina",
+    },
+    {
+        id: "1",
+        iduser: "1",
+        date: "2025/07/24",
+        title: "kikat ahmed zin smiya",
+        pic: cake,
+        rating: "5",
+        description: "kika zwina kika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwina",
+    }   
 ];
 
 const comments = [
