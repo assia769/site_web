@@ -1,51 +1,42 @@
 import UserDetaInfo from "./UserDetaInfo";
-import cake from "../assets/lazycatecake.webp";
 import MainUserPosts from "./MainUserPosts";
 import { PostsContext } from "./context/PostsContext";
 import { CommentsContext } from "./context/CommentsContext";
 import { UsersContext } from "./context/UsersContext";
 import { Stack } from "@mui/material";
+import { useState, useEffect } from "react";
 
-const posts = [
-    {
-        id: "1",
-        iduser: "1",
-        date: "2025/07/24",
-        title: "kikat ahmed zin smiya",
-        pic: cake,
-        rating: "5",
-        description: "kika zwina kika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwina",
-    }
-];
-
-const comments = [
-    {
-        id: "1",
-        iduser: "3",
-        idpost: "1",
-        date: "2025/07/24",
-        comment: "kika nadya"
-    }
-];
-
-const users = [
-    {
-        id: "1",
-        name: "AYMEN IGRI",
-    },
-    {
-        id: "2",
-        name: "assia",
-    },
-    {
-        id: "3",
-        name: "oumaima",
-    }
-];
 
 export default function Profile() {
+
+        const [posts, setPosts] = useState(null);
+        const [users, setUsers] = useState(null);
+        const [comments,setComments] = useState(null);
+    
+        
+            useEffect(() => {
+                async function fetchPost() {
+                    try {
+                        const response1 = await fetch(`http://localhost:8000/posts`);
+                        const data1 = await response1.json();  
+                        setPosts(data1);
+                        const response2 = await fetch(`http://localhost:8000/users`);
+                        const data2 = await response2.json();   
+                        setUsers(data2);
+                        const response3 = await fetch(`http://localhost:8000/comments`);
+                        const data3 = await response3.json();   
+                        setComments(data3);
+                    } catch (error) {
+                        console.error('Error fetching post:', error);
+                    }
+                }
+        
+                fetchPost();
+            },[]);
+
     return (
         <Stack spacing={3} sx={{ width: '100%' }}>
+            
             <UserDetaInfo />
             
             <CommentsContext.Provider value={comments}>

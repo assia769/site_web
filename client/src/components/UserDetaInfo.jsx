@@ -62,8 +62,8 @@ export default function UserDetaInfo() {
               <EditIcon className='profileicon' />
             </IconButton>
           }
-          title={`Name : ${mainUser.name}`}
-          subheader={`ID : ${mainUser.id}`}
+          title={`Name : ${mainUser ? mainUser.username_u : "?"}`}
+          subheader={`ID : ${mainUser ? mainUser.id_u : "?"}`}
         />
         <CardActions disableSpacing>
           <ExpandMore
@@ -77,7 +77,7 @@ export default function UserDetaInfo() {
         </CardActions>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
-            <Typography sx={{ marginBottom: 2 }}>Age : {mainUser.age}</Typography>
+            <Typography sx={{ marginBottom: 2 }}>Birthday: {mainUser ? mainUser.birthday_u : "?"}</Typography>
           </CardContent>
         </Collapse>
         <Dialog
@@ -93,8 +93,8 @@ export default function UserDetaInfo() {
                                         <Divider />
                                         <DialogContent>
                                             <Box className="newpost_text">
-                                                <TextField id="filled-basic" label="Name" variant="filled" className='text_addpost' defaultValue={mainUser.name}/>
-                                                <TextField id="filled-basic" label="Age" variant="filled" className='text_addpost' defaultValue={mainUser.age}/>
+                                                <TextField id="filled-basic" label="Name" variant="filled" className='text_addpost' defaultValue={mainUser ? mainUser.username_u : "?"}/>
+                                                <TextField id="filled-basic" label="Age" variant="filled" className='text_addpost' defaultValue={mainUser ? mainUser.birthday_u : "?"}/>
 
                                             </Box>
                                         

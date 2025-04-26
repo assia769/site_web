@@ -24,7 +24,7 @@ export default function Header(){
 
     let MainUser = useContext(MainUserContext);
     
-    const [age, setAge] = useState('');
+    const [searchChoice, setSearchChoice] = useState('');
     const [value, setValue] = useState('recents');
 
     const handleChangenavigation = (event, newValue) => {
@@ -32,8 +32,10 @@ export default function Header(){
     };
 
     const handleChange = (event) => {
-        setAge(event.target.value);
+        setSearchChoice(event.target.value);
+        console.log(event.target.value);
     };
+
 
 
     return (
@@ -52,7 +54,7 @@ export default function Header(){
                         <BottomNavigationAction
                             label="Profile"
                             value="Profile"
-                            icon={<Avatar sx={{width:24,height:24,fontSize:'0.75rem',color:'#B22222',backgroundColor:'#2B2B2B',transition: '0.3s','&:hover': {backgroundColor: '#B22222',color: '#2B2B2B',boxShadow:10}}}>{MainUser.name[0]}</Avatar>}
+                            icon={<Avatar sx={{width:24,height:24,fontSize:'0.75rem',color:'#B22222',backgroundColor:'#2B2B2B',transition: '0.3s','&:hover': {backgroundColor: '#B22222',color: '#2B2B2B',boxShadow:10}}}>{MainUser ? MainUser.username_u[0] : "?"}</Avatar>}
                             component={Link}
                             to="/profile"
                         />
@@ -100,7 +102,7 @@ export default function Header(){
                             <Select
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
-                                value={age}
+                                value={searchChoice}
                                 label="choie du recherche"
                                 onChange={handleChange}
                                 sx={{height: '40px',fontSize:'14px',backgroundColor:'#2B2B2B',color: '#E6E6E6',transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
@@ -142,8 +144,8 @@ export default function Header(){
                                     }
                                 }}
                             >
-                                <MenuItem value={10} >Titre</MenuItem>
-                                <MenuItem value={20}>Descripiton</MenuItem>
+                                <MenuItem value={'title'} >Titre</MenuItem>
+                                <MenuItem value={'discreption'}>Descripiton</MenuItem>
                             </Select>
                         </FormControl>
                         

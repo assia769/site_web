@@ -26,7 +26,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import { CommentsContext } from './context/CommentsContext';
 
 export default function MainUserPosts() {
   let Posts = useContext(PostsContext);
@@ -56,44 +55,49 @@ export default function MainUserPosts() {
   };
 
   // Filter posts that belong to the main user
-  const userPosts = Posts.filter(post => post.iduser === mainUser.id);
+  const userPosts = (mainUser && Posts) ? Posts.filter(post => post.id_u == mainUser.id_u) : [];
 
   const handlePosts = userPosts.map((post) => {
-    const isTextExpanded = expandedText[post.id] || false;
-    const truncatedText = post.description.slice(0, 200) + '...';
+    const isTextExpanded = expandedText[post.id_p] || false;
+    const truncatedText = post.discription_p.slice(0, 200) + '...';
+
+    if (!Posts) {
+      return <div>Loading...</div>;
+    }
+    
     
     return (
-      <Box key={post.id}>
+      <Box key={post.id_p}>
         <Card variant="outlined" className="mainpost">
           <React.Fragment>
             <CardContent>
               <Grid container spacing={2}>
                 <Grid size={10}>
                   <CardHeader
-                    avatar={<Avatar className="propic3">{mainUser.name[0]}</Avatar>}
-                    title={mainUser.name}
-                    subheader={post.date}
+                    avatar={<Avatar className="propic3">{mainUser.username_u[0]}</Avatar>}
+                    title={mainUser.username_u}
+                    subheader={post.date_p}
                     className='userinfo'
                     sx={{color:'white'}}
                   />
                 </Grid>
                 <Grid size={2} className='grad_result'>
                   <GradeIcon className='star'/>
-                  <h6>{post.rating}/5</h6>
+                  <h6>{(post.total_rating/post.rating_count).toFixed(1)}/5</h6>
                 </Grid>
                 <Grid size={5}>
-                  <img src={post.pic || "/placeholder.svg"} alt="cake" className='post_img' />
+                  <img src={post.pic_p || "/placeholder.svg"} alt="cake" className='post_img' />
                 </Grid>
                 <Grid size={7} className="title_p">
                   <Typography variant="h4" component="h1" className="post_title">
-                    {post.title}
+                    {post.title_p}
                   </Typography>
                   <Typography component="div">
-                    {isTextExpanded ? post.description : truncatedText}
+                    {isTextExpanded ? post.discription_p : truncatedText}
                   </Typography>
                   <Button 
                     variant='text' 
-                    onClick={() => handleToggleText(post.id)} 
+                    onClick={() => handleToggleText(post.id_p)} 
                     sx={{ color: 'gray' }}
                   >
                     {isTextExpanded ? 'See Less' : 'See More'}
@@ -144,7 +148,7 @@ export default function MainUserPosts() {
                     <Rating name="half-rating" defaultValue={2.5} precision={0.5} />
                   </Stack>
                 </Button>
-                <Button onClick={() => handleToggleComments(post.id)}>
+                <Button onClick={() => handleToggleComments(post.id_p)}>
                   <ModeCommentIcon/> 
                   Comment
                 </Button>
@@ -190,7 +194,7 @@ export default function MainUserPosts() {
                 </Box>
               </Dialog>
               
-              {expandedPostId === post.id && (
+              {expandedPostId === post.id_p && (
                 <div className='commentchoi'>
                   <Divider />
                   <CommentInput />

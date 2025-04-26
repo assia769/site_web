@@ -7,75 +7,34 @@ import NewPostFeald from "./NewPostFeald";
 import { PostsContext } from "./context/PostsContext";
 import { UsersContext } from "./context/UsersContext";
 import { CommentsContext } from "./context/CommentsContext";
-import cake from "../assets/lazycatecake.webp"
-
-
-
-const posts = [
-    {
-        id:"1",
-        iduser:"1",
-        date:"2025/07/24",
-        title:"kikat ahmed zin smiya",
-        pic: cake,
-        rating:"5",
-        description:"kika zwina kika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwina",
-    },
-    {
-        id:"2",
-        iduser:"2",
-        date:"2025/07/25",
-        title:"couscous",
-        pic:cake,
-        rating:"1",
-        description:"kika zwina kika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwina",
-
-    },
-    {
-        id:"3",
-        iduser:"3",
-        date:"2025/07/26",
-        title:"rfisa",
-        pic:cake,
-        rating:"4.5",
-        description:"kika zwina kika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwinakika zwina",
-
-    }
-];
-
-const comments=[
-        {
-            id:"1",
-            iduser:"2",
-            idpost:"1",
-            date:"2025/07/24",
-            comment:"kika nadya"
-        },
-        {
-            id:"2",
-            iduser:"3",
-            idpost:"3",
-            date:"2025/07/24",
-            comment:"kika nadya ghir howa dik smiya raha walo chof liha chi hal"
-        }
-];
-
-const users=[
-    {
-        id:"1",
-        name:"Aymen Igri"
-    },
-    {
-        id:"2",
-        name:"Assiya"
-    },
-    {
-        id:"3",
-        name:"Oumaima"
-    },
-]
+import { useState,useEffect } from "react";
 
 export default function Body(){
+
+    const [posts, setPosts] = useState(null);
+    const [users, setUsers] = useState(null);
+    const [comments,setComments] = useState(null);
+
+    
+        useEffect(() => {
+            async function fetchPost() {
+                try {
+                    const response1 = await fetch(`http://localhost:8000/posts`);
+                    const data1 = await response1.json();  
+                    setPosts(data1);
+                    const response2 = await fetch(`http://localhost:8000/users`);
+                    const data2 = await response2.json();   
+                    setUsers(data2);
+                    const response3 = await fetch(`http://localhost:8000/comments`);
+                    const data3 = await response3.json();   
+                    setComments(data3);
+                } catch (error) {
+                    console.error('Error fetching post:', error);
+                }
+            }
+    
+            fetchPost();
+        },[]);
 
     return(
         <>

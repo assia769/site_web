@@ -16,9 +16,9 @@ export default function ProfileDetailes(){
             <Card variant="outlined" className="card1" >
                 <React.Fragment>
                     <CardContent>
-                        <Avatar className='propic1'>{MainUser.name[0]}</Avatar>
+                        <Avatar className='propic1'>{MainUser ? MainUser.username_u[0] : "?"}</Avatar>
                             <Typography gutterBottom className='proname'>
-                                {MainUser.name}
+                                {MainUser ? MainUser.username_u : "?"}
                             </Typography>
                     </CardContent>
                 </React.Fragment>

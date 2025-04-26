@@ -25,6 +25,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import { SaveContext } from './context/SaveContext';
+import { MainUserContext } from './context/MainUserContext';
 
 // Button group style - defined once outside components
 const buttonGroupStyle = { 
@@ -189,14 +191,19 @@ const SinglePost = memo(({ post, postUser }) => {
 function Post() {
   const Users = useContext(UsersContext);
   const Posts = useContext(PostsContext);
+  const Saves = useContext(SaveContext);
+  const mainUser = useContext(MainUserContext)
 
-  if (!Users || !Posts) {
+  if (!Users || !Posts || !Saves) {
     return <div>Loading...</div>;
   }
 
+
+  const mainUserSaves = Saves.filter(save => save.id_u === mainUser.id_u);
+
   // Filter posts with valid users
   const validPosts = Posts.filter(post => 
-    Users.some(user => user.id_u === post.id_u)
+    mainUserSaves.some(save => save.id_p === post.id_p)
   );
 
   return (

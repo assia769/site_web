@@ -43,7 +43,7 @@ export default function NewPostFeald(){
                                 <Typography gutterBottom component="div" className='addPost'>
                                     <Grid container spacing={2}>
                                         <Grid size={1}>
-                                            <Avatar className='propic2'>{MainUser.name[0]}</Avatar>   
+                                            <Avatar className='propic2'>{MainUser ? MainUser.username_u[0] : "?"}</Avatar>   
                                         </Grid>
                                         <Grid size={11} className="text" onClick={handleClickOpen}>
                                           Chi wasfa jdida 3awtani ?      

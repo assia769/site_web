@@ -8,7 +8,7 @@ import BodyApp from './BodyApp';
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <BodyApp />,
+    element: <BodyApp id={2}/>,
     children: [
       {
         path: '/',
@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/myposts',
-        element: <SavedPosts />
+        element: <SavedPosts id={2}/>
       },
       {
         path: '*',
