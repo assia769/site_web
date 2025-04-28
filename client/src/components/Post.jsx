@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useContext, memo } from 'react';
+import { useState, useContext, memo ,useEffect} from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -25,6 +25,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import LoadingAnimation from './LoadingAnimation';
+import { SearchContext } from './context/SearchContext';
 
 // Button group style - defined once outside components
 const buttonGroupStyle = { 
@@ -80,6 +83,14 @@ const SinglePost = memo(({ post, postUser }) => {
     setShowComments(prev => !prev);
   };
 
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    // If the path already includes http, assume it's a full URL
+    if (imagePath.startsWith('http')) return imagePath;
+    // Otherwise, prepend the backend URL
+    return `http://localhost:8000/uploads/${imagePath}`;
+  };
+
   return (
     <Box key={post.id_p}>
       <Card variant="outlined" className="post">
@@ -100,7 +111,7 @@ const SinglePost = memo(({ post, postUser }) => {
                 <h6>{(post.total_rating/post.rating_count).toFixed(1)}/5</h6>
               </Grid>
               <Grid size={5}>
-                <img src={post.pic_p} alt="cake" className='post_img' />
+                <img loading='lazy' src={getImageUrl(post.pic_p)} alt={post.title_p || "Recipe image"} className='post_img' />
               </Grid>
               <Grid size={7} className="title_p">
                 <Typography variant="h4" component="h1" className="post_title">
@@ -189,19 +200,65 @@ const SinglePost = memo(({ post, postUser }) => {
 function Post() {
   const Users = useContext(UsersContext);
   const Posts = useContext(PostsContext);
+  const { searchTerm, searchType } = useContext(SearchContext);
+  const [displayedPosts, setDisplayedPosts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const itemsPerPage = 5;
+ 
+  useEffect(() => {
+    if (Posts && Users) {
+      // Filter posts with valid users 
+      const filteredPosts = Posts.filter(post => {
+        const haseValide = Users.some(user => user.id_u === post.id_u)
+
+        if(!searchTerm){
+          return haseValide;
+        }
+
+        const term = searchTerm.toLowerCase();
+
+        if(searchType === 'title'){
+          return haseValide && post.title_p.toLowerCase().includes(term);
+        }else if(searchType === 'discreption'){
+          return haseValide && post.discription_p.toLowerCase().includes(term);
+        }
+
+        return haseValide;
+
+      });
+      const reversPost = filteredPosts.reverse();
+      setDisplayedPosts(reversPost.slice(0, itemsPerPage));
+      setHasMore(reversPost.length > itemsPerPage);
+    }
+  }, [Posts, Users, searchTerm, searchType]);
+
+  const fetchMoreData = () => {
+    if (displayedPosts.length >= Posts.length) {
+      setHasMore(false);
+      return;
+    }
+    
+    // Add more posts to the displayed posts
+    setTimeout(() => {
+      setDisplayedPosts(prevPosts => [
+        ...prevPosts,
+        ...Posts.slice(prevPosts.length, prevPosts.length + itemsPerPage)
+      ]);
+    }, 500);
+  };
 
   if (!Users || !Posts) {
-    return <div>Loading...</div>;
+    return <LoadingAnimation /> ;
   }
 
-  // Filter posts with valid users
-  const validPosts = Posts.filter(post => 
-    Users.some(user => user.id_u === post.id_u)
-  );
-
   return (
-    <>
-      {validPosts.map(post => {
+    <InfiniteScroll
+      dataLength={displayedPosts.length}
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={<LoadingAnimation />}
+    >
+      {displayedPosts.map(post => {
         const postUser = Users.find(user => user.id_u === post.id_u);
         return (
           <SinglePost 
@@ -211,7 +268,7 @@ function Post() {
           />
         );
       })}
-    </>
+    </InfiniteScroll>
   );
 }
 

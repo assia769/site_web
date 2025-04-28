@@ -14,6 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import { useEffect } from 'react';
 
 
 import '../style/Body.css';
@@ -22,6 +23,111 @@ import { Divider } from '@mui/material';
 
 export default function NewPostFeald(){
 
+    const [csrfToken, setCsrfToken] = useState('');
+
+    useEffect(() => {
+        fetch('http://localhost:8000/sanctum/csrf-cookie', {
+            credentials: 'include' // Important for cookies
+        })
+        .then(response => {
+            // The CSRF token is now set in the cookies
+            const token = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1];
+                
+            if (token) {
+                setCsrfToken(decodeURIComponent(token));
+            }
+        })
+        .catch(error => console.error('Error fetching CSRF token:', error));
+    }, []);
+
+    const handleSubmit = async () => {
+        try {
+            // Validate form fields
+            if (!title || !description || !imageFile) {
+                alert("Please fill in all required fields");
+                return;
+            }
+            
+            if (!MainUser || !MainUser.id_u) {
+                console.error("User not properly authenticated");
+                return;
+            }
+            
+            // Format the date in MySQL format (YYYY-MM-DD HH:MM:SS)
+            const now = new Date();
+            const formattedDate = now.getFullYear() + '-' + 
+                                 String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                                 String(now.getDate()).padStart(2, '0') + ' ' + 
+                                 String(now.getHours()).padStart(2, '0') + ':' + 
+                                 String(now.getMinutes()).padStart(2, '0') + ':' + 
+                                 String(now.getSeconds()).padStart(2, '0');
+            
+            const formData = new FormData();
+            formData.append('title_p', title);
+            formData.append('discription_p', description);
+            formData.append('statu_p', 'public');
+            formData.append('id_u', MainUser.id_u);
+            formData.append('date_p', formattedDate); 
+            formData.append('total_rating',0);
+            formData.append('rating_count',0);
+            
+            // Only add the file if one is selected
+            if (imageFile) {
+                formData.append('pic_p', imageFile);
+            }
+            
+            console.log("Submitting form data:", {
+                title: title,
+                description: description,
+                status: 'public',
+                userId: MainUser.id_u,
+                date: formattedDate,
+                hasImage: !!imageFile,
+            });
+            
+            const response = await fetch('http://localhost:8000/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-XSRF-TOKEN': csrfToken,
+                },
+                credentials: 'include',
+                body: formData,
+            });
+            
+            const result = await response.json();
+            console.log('Response status:', response.status);
+            console.log('Post created response:', result);
+            
+            if (response.ok) {
+                console.log('Post created successfully:', result);
+                handleClose();
+            } else {
+                console.error('Server response:', result);
+                if (result.errors) {
+                    // Display validation errors to the user
+                    const errorMessages = Object.values(result.errors).flat();
+                    alert("Please fix the following errors: " + errorMessages.join(", "));
+                } else if (result.message) {
+                    alert("Error: " + result.message);
+                } else {
+                    alert("An unknown error occurred.");
+                }
+            }
+        } catch (error) {
+            console.error('Error during submission:', error);
+            alert("Error communicating with the server. Please try again.");
+        }
+    };
+      
+      
+
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [imageFile, setImageFile] = useState(null);
     let MainUser = useContext(MainUserContext);
 
     const [open, setOpen] = useState(false);
@@ -62,7 +168,14 @@ export default function NewPostFeald(){
                                         <Divider />
                                         <DialogContent>
                                             <Box className="newpost_text">
-                                                <TextField id="filled-basic" label="Chno smit had lWasfa ?" variant="filled" className='text_addpost'/>
+                                                <TextField
+                                                    id="filled-basic" 
+                                                    label="Chno smit had lWasfa ?" 
+                                                    variant="filled" 
+                                                    className='text_addpost'
+                                                    value={title}
+                                                    onChange={(e) => setTitle(e.target.value)}
+                                                />
                                                 <TextField
                                                     id="outlined-multiline-static"
                                                     label="Gol lina kfach katsawb ?"
@@ -70,6 +183,8 @@ export default function NewPostFeald(){
                                                     rows={6}
                                                     variant="filled"
                                                     className='text_addpost'
+                                                    value={description}
+                                                    onChange={(e) => setDescription(e.target.value)}
                                                 />
                                             </Box>
                                             <input
@@ -81,7 +196,7 @@ export default function NewPostFeald(){
                                                     const file = event.target.files[0];
                                                     if (file) {
                                                         console.log("Selected file:", file);
-                                                        // Handle the uploaded file here
+                                                        setImageFile(file)// Handle the uploaded file here
                                                     }
                                                 }}
                                             />
@@ -107,9 +222,7 @@ export default function NewPostFeald(){
                                         </DialogContent>
                                         <DialogActions>
                                             <Button onClick={handleClose} className='button_addpost'>Cancel</Button>
-                                            <Button onClick={handleClose} className='button_addpost 'autoFocus>
-                                                Post
-                                            </Button>
+                                            <Button onClick={handleSubmit} className='button_addpost 'autoFocus>Post</Button>
                                         </DialogActions>
                                         </Box>
                                     </Dialog>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useContext, memo } from 'react';
+import { useState, useContext, memo} from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -27,6 +27,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { SaveContext } from './context/SaveContext';
 import { MainUserContext } from './context/MainUserContext';
+import { SearchContext } from './context/SearchContext';
+import { useEffect } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component'; 
+import LoadingAnimation from './LoadingAnimation';
 
 // Button group style - defined once outside components
 const buttonGroupStyle = { 
@@ -192,33 +196,83 @@ function Post() {
   const Users = useContext(UsersContext);
   const Posts = useContext(PostsContext);
   const Saves = useContext(SaveContext);
+  const { searchTerm, searchType } = useContext(SearchContext);
+  const [displayedPosts, setDisplayedPosts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
   const mainUser = useContext(MainUserContext)
 
-  if (!Users || !Posts || !Saves) {
-    return <div>Loading...</div>;
-  }
+  const itemsPerPage = 5;
+ 
+
+  
+
+  useEffect(() => {
+    if (Posts && Users && Saves && mainUser) {
+        const filteredPosts = Posts.filter(post => {
+        const mainUserSaves = Saves.filter(save => save.id_u === mainUser.id_u);
+        const haseValide = mainUserSaves.some(save => save.id_p === post.id_p);
+  
+        if (!searchTerm) {
+          return haseValide;
+        }
+  
+        const term = searchTerm.toLowerCase();
+  
+        if (searchType === 'title') {
+          return haseValide && post.title_p.toLowerCase().includes(term);
+        } else if (searchType === 'discreption') {
+          return haseValide && post.discription_p.toLowerCase().includes(term);
+        }
+  
+        return haseValide;
+      });
+
+      const reversPosts = filteredPosts.reverse();
+  
+      setDisplayedPosts(reversPosts.slice(0, itemsPerPage));
+      setHasMore(reversPosts.length > itemsPerPage);
+    }
+  }, [Posts, Users, searchTerm, searchType]);
+  
+    const fetchMoreData = () => {
+      if (displayedPosts.length >= Posts.length) {
+        setHasMore(false);
+        return;
+      }
+
+    setTimeout(() => {
+        setDisplayedPosts(prevPosts => [
+          ...prevPosts,
+          ...Posts.slice(prevPosts.length, prevPosts.length + itemsPerPage)
+        ]);
+      }, 500);
+    };
 
 
-  const mainUserSaves = Saves.filter(save => save.id_u === mainUser.id_u);
+    if (!Users || !Posts || !Saves) {
+      return <div className="loadersave"></div>;
+    }
 
   // Filter posts with valid users
-  const validPosts = Posts.filter(post => 
-    mainUserSaves.some(save => save.id_p === post.id_p)
-  );
 
   return (
-    <>
-      {validPosts.map(post => {
-        const postUser = Users.find(user => user.id_u === post.id_u);
-        return (
-          <SinglePost 
-            key={post.id_p} 
-            post={post} 
-            postUser={postUser}
-          />
-        );
-      })}
-    </>
+    <InfiniteScroll
+          dataLength={displayedPosts.length}
+          next={fetchMoreData}
+          hasMore={hasMore}
+          loader={<div className="loadersave"></div>}
+        >
+          {displayedPosts.map(post => {
+            const postUser = Users.find(user => user.id_u === post.id_u);
+            return (
+              <SinglePost 
+                key={post.id_p} 
+                post={post} 
+                postUser={postUser}
+              />
+            );
+          })}
+        </InfiniteScroll>
   );
 }
 

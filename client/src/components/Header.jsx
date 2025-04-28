@@ -19,12 +19,13 @@ import { Link } from 'react-router-dom';
 import { useContext } from 'react';
 import { MainUserContext } from './context/MainUserContext';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
+import { SearchContext } from './context/SearchContext';
 
 export default function Header(){
 
     let MainUser = useContext(MainUserContext);
-    
-    const [searchChoice, setSearchChoice] = useState('');
+    const { searchTerm, setSearchTerm, searchType, setSearchType } = useContext(SearchContext);
+
     const [value, setValue] = useState('recents');
 
     const handleChangenavigation = (event, newValue) => {
@@ -32,10 +33,18 @@ export default function Header(){
     };
 
     const handleChange = (event) => {
-        setSearchChoice(event.target.value);
-        console.log(event.target.value);
+        setSearchType(event.target.value);
     };
 
+    const handleSearchInputChange = (event)=>{
+        setSearchTerm(event.target.value);
+
+    }
+
+    const handleSearch = () => {
+        // You can add additional search logic here if needed
+        console.log(`Searching for: ${searchTerm} in ${searchType}`);
+    };
 
 
     return (
@@ -85,15 +94,15 @@ export default function Header(){
                     <Paper
                         component="form"
                         sx={{ p: '1px 1px', display: 'flex', alignItems: 'center',width: '300px', maxWidth: '250px', minWidth: '10px', backgroundColor:'#2B2B2B', color:'#E6E6E6',height:'40px','&:hover':{boxShadow:10}}}
+                        onSubmit={(e)=>{e.preventDefault();handleSearch();}}
                     >
                         <InputBase
                             sx={{fontSize:'14px', ml: 2, flex: 1 , width:'1200px' ,color:'#E6E6E6', height:'100%'}}
                             placeholder="Ach ghantaybo lyoum ?"
-                            inputProps={{ 'aria-label': 'Ach ghantaybo lyoum ?' }}
+                            inputProps={{ 'aria-label': 'Ach ghantaybo lyoum ?'}}
+                            value={searchTerm}
+                            onChange={handleSearchInputChange}
                         />
-                        <IconButton type="button" sx={{ p: '10px' , color:'#8B0000','&:hover': {color: '#2B2B2B', backgroundColor: '#8B0000', }}} aria-label="search">
-                            <SearchIcon />
-                        </IconButton>
                     </Paper>
                     {/* select  */}
                     <Box sx={{ minWidth: 100 }}>
@@ -102,7 +111,7 @@ export default function Header(){
                             <Select
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
-                                value={searchChoice}
+                                value={searchType}
                                 label="choie du recherche"
                                 onChange={handleChange}
                                 sx={{height: '40px',fontSize:'14px',backgroundColor:'#2B2B2B',color: '#E6E6E6',transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
