@@ -14,21 +14,15 @@ import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ReportIcon from '@mui/icons-material/Report';
 import Comment from './comments';
 import CommentInput from './CommentInput';
 import { MainUserContext } from './context/MainUserContext';
 import { PostsContext } from './context/PostsContext';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import LoadingAnimation from './LoadingAnimation';
 import { SearchContext } from './context/SearchContext';
-import Post from './Post';
+import Repport from './Repport';
 
 // Button group style - defined once outside components
 const buttonGroupStyle = { 
@@ -141,52 +135,24 @@ const SinglePost = memo(({ post, mainUser }) => {
                 <ModeCommentIcon/> 
                 Comment
               </Button>
-              <Button>
-                <BookmarkIcon/> 
-                Save
-              </Button>
               <Button onClick={() => setDialogOpen(true)}>
                 <ReportIcon/> 
                 Report
               </Button>
             </ButtonGroup>
-            
-            <Dialog
-              open={dialogOpen}
-              onClose={() => setDialogOpen(false)}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <Box className="newPost_window">
-                <DialogTitle id="alert-dialog-title">
-                  {"Report"}
-                </DialogTitle>
-                <Divider />
-                <DialogContent>
-                  <Box className="newpost_text">
-                    <TextField
-                      id={`report-field-${post.id_p}`}
-                      label="what's the problem ?"
-                      multiline
-                      rows={6}
-                      variant="filled"
-                      className='text_addpost'
-                    />
-                  </Box>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => setDialogOpen(false)} className='button_addpost'>Cancel</Button>
-                  <Button onClick={() => setDialogOpen(false)} className='button_addpost' autoFocus>
-                    Report 
-                  </Button>
-                </DialogActions>
-              </Box>
-            </Dialog>
+            {dialogOpen && (
+                          <Repport
+                            dialogOpen={dialogOpen}
+                            setDialogOpen={setDialogOpen}
+                            userId={mainUser.id_u}
+                            postId={post.id_p}
+                          />
+                        )}
             
             {showComments && (
               <div className='commentchoi'>
                 <Divider />
-                <CommentInput />
+                <CommentInput userId={mainUser.id_u} postId={post.id_p} />
                 <Comment post={post} />
               </div>
             )}

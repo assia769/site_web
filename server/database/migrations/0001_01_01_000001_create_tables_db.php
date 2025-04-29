@@ -83,6 +83,8 @@ return new class extends Migration
             $table->id('id_r');
             $table->unsignedBigInteger('id_u');
             $table->unsignedBigInteger('id_p');
+            $table->timestamp('date_r')->useCurrent();
+            $table->text('description_r');
             $table->foreign('id_u')->references('id_u')->on('users')->onDelete('cascade');
             $table->foreign('id_p')->references('id_p')->on('post')->onDelete('cascade');
         });

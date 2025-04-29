@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Save;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB; // Import the DB facade
 
 class SaveController extends Controller
 {
@@ -12,23 +13,65 @@ class SaveController extends Controller
      */
     public function index()
     {
-        return response()->json(Save::all(),200);
+        return response()->json(Save::all(), 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
-    {
-        //
+{
+    try {
+        $validatedData = $request->validate([
+            'id_u' => 'required|integer',
+            'id_p' => 'required|integer',
+        ]);
+    
+        $validatedData['date_r'] = now();
+        $report = Save::create($validatedData);
+    
+        return response()->json($report, 201);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ], 500);
     }
+}
+
+    public function getUserSaves($userId) 
+    {
+        $saves = Save::where('id_u', $userId)->get();
+        return response()->json($saves, 200);
+    }
+
+    public function checkSaveStatus(Request $request)
+    {
+        $request->validate([
+            'id_u' => 'required',
+            'id_p' => 'required',
+        ]);
+
+        $existingSave = Save::where('id_u', $request->id_u)
+                            ->where('id_p', $request->id_p)
+                            ->first();
+
+        return response()->json([
+            'is_saved' => $existingSave ? true : false
+        ], 200);
+    }
+
+    
 
     /**
      * Display the specified resource.
      */
     public function show($id)
     {
-        //
+        $save = Save::find($id);
+        if (!$save) {
+            return response()->json(['message' => 'Save record not found'], 404);
+        }
+        return response()->json($save, 200);
     }
 
     public function showByUser($id)
@@ -54,6 +97,11 @@ class SaveController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $save = Save::find($id);
+        if (!$save) {
+            return response()->json(['message' => 'Save record not found'], 404);
+        }
+        $save->delete();
+        return response()->json(['message' => 'Save record deleted successfully'], 200);
     }
 }

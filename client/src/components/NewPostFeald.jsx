@@ -105,6 +105,7 @@ export default function NewPostFeald(){
             if (response.ok) {
                 console.log('Post created successfully:', result);
                 handleClose();
+                window.location.reload();
             } else {
                 console.error('Server response:', result);
                 if (result.errors) {

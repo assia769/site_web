@@ -87,6 +87,7 @@ class DatabaseSeeder extends Seeder
             Report::create([
                 'id_u' => rand(1, 10),
                 'id_p' => rand(1, 30),
+                'description_r' => 'This is a report description for report #' . $i, // Add a default description
             ]);
         }
     }

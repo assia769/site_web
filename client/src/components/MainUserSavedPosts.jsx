@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useContext, memo} from 'react';
+import { useState, useContext, memo, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -20,17 +20,11 @@ import Comment from './comments';
 import CommentInput from './CommentInput';
 import { UsersContext } from './context/UsersContext';
 import { PostsContext } from './context/PostsContext';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
 import { SaveContext } from './context/SaveContext';
 import { MainUserContext } from './context/MainUserContext';
 import { SearchContext } from './context/SearchContext';
-import { useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component'; 
-import LoadingAnimation from './LoadingAnimation';
+import Repport from './Repport';
 
 // Button group style - defined once outside components
 const buttonGroupStyle = { 
@@ -71,7 +65,7 @@ const buttonGroupStyle = {
 };
 
 // Memoized SinglePost component for each post
-const SinglePost = memo(({ post, postUser }) => {
+const SinglePost = memo(({ post, postUser, mainUser }) => {
   const [isTextExpanded, setIsTextExpanded] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -84,6 +78,14 @@ const SinglePost = memo(({ post, postUser }) => {
 
   const handleToggleComments = () => {
     setShowComments(prev => !prev);
+  };
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    // If the path already includes http, assume it's a full URL
+    if (imagePath.startsWith('http')) return imagePath;
+    // Otherwise, prepend the backend URL
+    return `http://localhost:8000/uploads/${imagePath}`;
   };
 
   return (
@@ -99,6 +101,7 @@ const SinglePost = memo(({ post, postUser }) => {
                   subheader={post.date_p}
                   className='userinfo'
                   sx={{color:'white'}}
+                  mainUser={mainUser}
                 />
               </Grid>
               <Grid size={2} className='grad_result'>
@@ -106,7 +109,7 @@ const SinglePost = memo(({ post, postUser }) => {
                 <h6>{(post.total_rating/post.rating_count).toFixed(1)}/5</h6>
               </Grid>
               <Grid size={5}>
-                <img src={post.pic_p} alt="cake" className='post_img' />
+                <img loading='lazy' src={getImageUrl(post.pic_p)} alt={post.title_p || "Recipe image"} className='post_img' />
               </Grid>
               <Grid size={7} className="title_p">
                 <Typography variant="h4" component="h1" className="post_title">
@@ -135,52 +138,25 @@ const SinglePost = memo(({ post, postUser }) => {
                 <ModeCommentIcon/> 
                 Comment
               </Button>
-              <Button>
-                <BookmarkIcon/> 
-                Save
-              </Button>
               <Button onClick={() => setDialogOpen(true)}>
                 <ReportIcon/> 
                 Report
               </Button>
             </ButtonGroup>
             
-            <Dialog
-              open={dialogOpen}
-              onClose={() => setDialogOpen(false)}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <Box className="newPost_window">
-                <DialogTitle id="alert-dialog-title">
-                  {"Report"}
-                </DialogTitle>
-                <Divider />
-                <DialogContent>
-                  <Box className="newpost_text">
-                    <TextField
-                      id={`report-field-${post.id_p}`}
-                      label="what's the problem ?"
-                      multiline
-                      rows={6}
-                      variant="filled"
-                      className='text_addpost'
-                    />
-                  </Box>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => setDialogOpen(false)} className='button_addpost'>Cancel</Button>
-                  <Button onClick={() => setDialogOpen(false)} className='button_addpost' autoFocus>
-                    Report 
-                  </Button>
-                </DialogActions>
-              </Box>
-            </Dialog>
+            {dialogOpen && (
+                          <Repport
+                            dialogOpen={dialogOpen}
+                            setDialogOpen={setDialogOpen}
+                            userId={mainUser.id_u}
+                            postId={post.id_p}
+                          />
+            )}
             
             {showComments && (
               <div className='commentchoi'>
                 <Divider />
-                <CommentInput />
+                <CommentInput userId={mainUser.id_u} postId={post.id_p}/>
                 <Comment post={post} />
               </div>
             )}
@@ -196,83 +172,139 @@ function Post() {
   const Users = useContext(UsersContext);
   const Posts = useContext(PostsContext);
   const Saves = useContext(SaveContext);
+  const mainUser = useContext(MainUserContext);
   const { searchTerm, searchType } = useContext(SearchContext);
   const [displayedPosts, setDisplayedPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
-  const mainUser = useContext(MainUserContext)
+  const [userSavedPosts, setUserSavedPosts] = useState([]);
 
   const itemsPerPage = 5;
- 
 
+  // First, identify all posts that the main user has saved and the save order
+  const [userSaves, setUserSaves] = useState([]);
   
-
   useEffect(() => {
-    if (Posts && Users && Saves && mainUser) {
-        const filteredPosts = Posts.filter(post => {
-        const mainUserSaves = Saves.filter(save => save.id_u === mainUser.id_u);
-        const haseValide = mainUserSaves.some(save => save.id_p === post.id_p);
-  
-        if (!searchTerm) {
-          return haseValide;
-        }
-  
-        const term = searchTerm.toLowerCase();
-  
-        if (searchType === 'title') {
-          return haseValide && post.title_p.toLowerCase().includes(term);
-        } else if (searchType === 'discreption') {
-          return haseValide && post.discription_p.toLowerCase().includes(term);
-        }
-  
-        return haseValide;
-      });
-
-      const reversPosts = filteredPosts.reverse();
-  
-      setDisplayedPosts(reversPosts.slice(0, itemsPerPage));
-      setHasMore(reversPosts.length > itemsPerPage);
+    if (Saves && mainUser) {
+      // Get all saved data for the main user (keeping original order from Saves table)
+      const mainUserSaves = Saves.filter(save => save.id_u === mainUser.id_u);
+      setUserSaves(mainUserSaves);
+      setUserSavedPosts(mainUserSaves.map(save => save.id_p));
     }
-  }, [Posts, Users, searchTerm, searchType]);
-  
-    const fetchMoreData = () => {
-      if (displayedPosts.length >= Posts.length) {
-        setHasMore(false);
-        return;
+  }, [Saves, mainUser]);
+
+  // Then filter posts based on the saved IDs and search criteria
+  useEffect(() => {
+    if (Posts && Users && userSavedPosts.length > 0 && userSaves.length > 0) {
+      // Instead of filtering posts first, we'll start with the save order
+      // and map each save to its corresponding post
+      
+      // First create a post lookup map for faster access
+      const postsMap = {};
+      Posts.forEach(post => {
+        postsMap[post.id_p] = post;
+      });
+      
+      // Create ordered array of posts based on save order
+      let orderedPosts = [];
+      
+      // Loop through saves in the original order from the Saves table
+      for (const save of userSaves) {
+        const post = postsMap[save.id_p];
+        if (post) {
+          // Apply search filters if needed
+          if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            if (searchType === 'title' && !post.title_p.toLowerCase().includes(term)) {
+              continue;
+            } else if (searchType === 'discreption' && !post.discription_p.toLowerCase().includes(term)) {
+              continue;
+            }
+          }
+          orderedPosts.push(post);
+        }
       }
+      
+      // Reverse the ordered posts to show newest saves first
+      orderedPosts = orderedPosts.reverse();
+      
+      setDisplayedPosts(orderedPosts.slice(0, itemsPerPage));
+      setHasMore(orderedPosts.length > itemsPerPage);
+    }
+  }, [Posts, Users, userSavedPosts, searchTerm, searchType, userSaves]);
+  
+  const fetchMoreData = () => {
+    if (!Posts || !userSaves || userSaves.length === 0) return;
+    
+    if (displayedPosts.length >= userSavedPosts.length) {
+      setHasMore(false);
+      return;
+    }
 
     setTimeout(() => {
-        setDisplayedPosts(prevPosts => [
-          ...prevPosts,
-          ...Posts.slice(prevPosts.length, prevPosts.length + itemsPerPage)
-        ]);
-      }, 500);
-    };
+      // Create a post lookup map for faster access
+      const postsMap = {};
+      Posts.forEach(post => {
+        postsMap[post.id_p] = post;
+      });
+      
+      // Create ordered array of all posts based on save order
+      let orderedPosts = [];
+      
+      // Loop through saves in their original order
+      for (const save of userSaves) {
+        const post = postsMap[save.id_p];
+        if (post) {
+          // Apply search filters if needed
+          if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            if (searchType === 'title' && !post.title_p.toLowerCase().includes(term)) {
+              continue;
+            } else if (searchType === 'discreption' && !post.discription_p.toLowerCase().includes(term)) {
+              continue;
+            }
+          }
+          orderedPosts.push(post);
+        }
+      }
+      
+      // Reverse the ordered posts to show newest saves first
+      orderedPosts = orderedPosts.reverse();
+      
+      // Get next batch of posts
+      const nextPosts = orderedPosts.slice(displayedPosts.length, displayedPosts.length + itemsPerPage);
 
+      setDisplayedPosts(prevPosts => [
+        ...prevPosts,
+        ...nextPosts
+      ]);
+    }, 500);
+  };
 
-    if (!Users || !Posts || !Saves) {
-      return <div className="loadersave"></div>;
-    }
-
-  // Filter posts with valid users
+  if (!Users || !Posts || !Saves || !mainUser) {
+    return <div className="loadersave"></div>;
+  }
 
   return (
     <InfiniteScroll
-          dataLength={displayedPosts.length}
-          next={fetchMoreData}
-          hasMore={hasMore}
-          loader={<div className="loadersave"></div>}
-        >
-          {displayedPosts.map(post => {
-            const postUser = Users.find(user => user.id_u === post.id_u);
-            return (
-              <SinglePost 
-                key={post.id_p} 
-                post={post} 
-                postUser={postUser}
-              />
-            );
-          })}
-        </InfiniteScroll>
+      dataLength={displayedPosts.length}
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={<div className="loadersave"></div>}
+    >
+      {displayedPosts.map(post => {
+        const postUser = Users.find(user => user.id_u === post.id_u);
+        if (!postUser) return null; // Skip posts with invalid users
+        
+        return (
+          <SinglePost 
+            key={post.id_p} 
+            post={post} 
+            postUser={postUser}
+            mainUser={mainUser}
+          />
+        );
+      })}
+    </InfiniteScroll>
   );
 }
 
