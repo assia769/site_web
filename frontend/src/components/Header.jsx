@@ -6,9 +6,10 @@ const Header = () => {
       <div className="container">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/logoWeb.png" alt="Logo" style={{ height: '80px' }} />
+          <img src="/logo.png" alt="Logo" style={{ height: '80px' }} />
 
             <h1>Dashboard Recettes Marocaines</h1>
+            
           </div>
         </div>
       </div>

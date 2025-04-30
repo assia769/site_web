@@ -1,11 +1,26 @@
-// frontend/src/components/RecipesChart.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+// Désactiver les animations au niveau global pour Chart.js
+ChartJS.defaults.animation = false;
+ChartJS.defaults.animations = false;
+ChartJS.defaults.transitions = {
+  active: {
+    animation: {
+      duration: 0
+    }
+  }
+};
+
 const RecipesChart = ({ postsData }) => {
+  // Log uniquement en développement et correctement dans une fonction
+  useEffect(() => {
+    console.log("Render RecipesChart", postsData);
+  }, [postsData]);
+
   const months = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
@@ -30,6 +45,24 @@ const RecipesChart = ({ postsData }) => {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: true,
+    animation: false,
+    animations: false,
+    animation: {
+      duration: 0
+    },
+    animations: {
+      colors: false,
+      x: false,
+      y: false
+    },
+    transitions: {
+      active: {
+        animation: {
+          duration: 0
+        }
+      }
+    },
     plugins: {
       legend: {
         position: 'top',
@@ -40,23 +73,29 @@ const RecipesChart = ({ postsData }) => {
         font: {
           size: 16
         }
+      }
     },
-  },
-  scales: {
-    y: {
-      beginAtZero: true,
-      ticks: {
-        precision: 0
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          precision: 0
+        }
       }
     }
-  }
+  };
+
+  return (
+    <div>
+      {/* Utilisation d'une key unique basée sur les données pour forcer le re-rendu complet */}
+      <Bar 
+        key={`recipes-chart-${JSON.stringify(postsData)}`} 
+        data={chartData} 
+        options={options} 
+        redraw={true}
+      />
+    </div>
+  );
 };
 
-return (
-  <div>
-    <Bar data={chartData} options={options} />
-  </div>
-);
-};
-
-export default RecipesChart;
+export default React.memo(RecipesChart);

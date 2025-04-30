@@ -55,6 +55,7 @@ const UserActivityChart = ({ userData }) => {
   return (
     <div>
       <Bar data={chartData} options={options} />
+
     </div>
   );
 };
