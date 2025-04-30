@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { useState, useContext, memo, useEffect } from "react"
 import Box from "@mui/material/Box"
@@ -76,6 +74,9 @@ const SinglePost = memo(({ post, postUser }) => {
 
   const [csrfToken, setCsrfToken] = useState("")
   const [isSaved, setIsSaved] = useState(false)
+  const [userRating, setUserRating] = useState(0)
+  const [hasRated, setHasRated] = useState(false)
+  const [postData, setPostData] = useState(post)
 
   // Modified CommentInput.jsx with proper CSRF handling
   useEffect(() => {
@@ -111,6 +112,29 @@ const SinglePost = memo(({ post, postUser }) => {
           setIsSaved(data.is_saved)
         } else {
           console.error("Failed to check save status:", await res.text())
+        }
+
+        const ratingRes = await fetch("http://localhost:8000/api/rating/check", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "X-XSRF-TOKEN": token,
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            id_u: mainUser.id_u,
+            id_p: post.id_p,
+          }),
+        })
+
+        if (ratingRes.ok) {
+          const ratingData = await ratingRes.json()
+          console.log("Rating status check:", ratingData)
+          setHasRated(ratingData.has_rated)
+          setUserRating(ratingData.rating || 0)
+        } else {
+          console.error("Failed to check rating status:", await ratingRes.text())
         }
       } catch (err) {
         console.error("Init error:", err)
@@ -152,6 +176,42 @@ const SinglePost = memo(({ post, postUser }) => {
     }
   }
 
+  const handleRatingChange = async (event, newValue) => {
+    if (!csrfToken || hasRated) return
+    
+    try {
+      const response = await fetch("http://localhost:8000/api/rating", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-XSRF-TOKEN": csrfToken,
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          id_u: mainUser.id_u,
+          id_p: post.id_p,
+          rating: newValue,
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log("Rating submitted successfully:", data)
+        setHasRated(true)
+        setUserRating(newValue)
+        setPostData(data.post) // Update post with new rating stats
+      } else {
+        const errorData = await response.json()
+        console.error("Rating error:", errorData)
+        alert(errorData.error || "Failed to submit rating.")
+      }
+    } catch (err) {
+      console.error("Rating exception:", err)
+      alert("An error occurred. Please try again.")
+    }
+  }
+
   const handleToggleText = () => {
     setIsTextExpanded((prev) => !prev)
   }
@@ -167,6 +227,11 @@ const SinglePost = memo(({ post, postUser }) => {
     // Otherwise, prepend the backend URL
     return `http://localhost:8000/uploads/${imagePath}`
   }
+
+  const averageRating = postData.rating_count > 0 
+    ? (postData.total_rating / postData.rating_count).toFixed(1) 
+    : "0.0"
+
 
   return (
     <Box key={post.id_p}>
@@ -185,7 +250,7 @@ const SinglePost = memo(({ post, postUser }) => {
               </Grid>
               <Grid size={2} className="grad_result">
                 <GradeIcon className="star" />
-                <h6>{(post.total_rating / post.rating_count).toFixed(1)}/5</h6>
+                <h6>{averageRating}/5</h6>
               </Grid>
               <Grid size={5}>
                 <img
@@ -209,7 +274,22 @@ const SinglePost = memo(({ post, postUser }) => {
             <ButtonGroup variant="outlined" aria-label="Basic button group" className="button_g" sx={buttonGroupStyle}>
               <Button className="rating">
                 <Stack spacing={1}>
-                  <Rating name={`rating-${post.id_p}`} defaultValue={2.5} precision={0.5} />
+                  <Rating 
+                    name={`rating-${post.id_p}`}  
+                    value={userRating || 0} 
+                    onChange={handleRatingChange} 
+                    precision={1} 
+                    sx={{
+                      opacity: hasRated ? 1 : 0.9,
+                      '& .MuiRating-iconFilled': {
+                        color: hasRated ? '#f9a825' : '#ffb400',
+                      },
+                      '&:hover': {
+                        opacity: hasRated ? 1 : 1,
+                      }
+                    }}
+                    disabled={hasRated}
+                  />
                 </Stack>
               </Button>
               <Button onClick={handleToggleComments}>
@@ -219,7 +299,7 @@ const SinglePost = memo(({ post, postUser }) => {
               <Button
                 onClick={handleSavePost}
                 disabled={isSaved || !csrfToken}
-                title={isSaved ? "Already saved" : !csrfToken ? "Loading…" : "Save"}
+                title={isSaved ? "Saved" : !csrfToken ? "Loading…" : "Save"}
                 sx={{
                   opacity: isSaved ? 0.5 : 1,
                   "&.Mui-disabled": {

@@ -14,7 +14,6 @@ import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ReportIcon from '@mui/icons-material/Report';
 import Comment from './comments';
 import CommentInput from './CommentInput';
@@ -71,6 +70,87 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   
   const truncatedText = post.discription_p.slice(0, 200) + '...';
+
+  const [csrfToken, setCsrfToken] = useState("")
+  const [userRating, setUserRating] = useState(0)
+  const [hasRated, setHasRated] = useState(false)
+  const [postData, setPostData] = useState(post)
+
+  useEffect(() => {
+      ;(async () => {
+        try {
+          // A) Bootstrap Sanctum CSRF
+          await fetch("http://localhost:8000/sanctum/csrf-cookie", {
+            credentials: "include",
+          })
+          // B) Grab the freshly-set XSRF-TOKEN cookie
+          const raw = document.cookie.split("; ").find((r) => r.startsWith("XSRF-TOKEN="))
+          const token = raw ? decodeURIComponent(raw.split("=")[1]) : ""
+          setCsrfToken(token)
+  
+          const ratingRes = await fetch("http://localhost:8000/api/rating/check", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              "X-XSRF-TOKEN": token,
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              id_u: mainUser.id_u,
+              id_p: post.id_p,
+            }),
+          })
+  
+          if (ratingRes.ok) {
+            const ratingData = await ratingRes.json()
+            console.log("Rating status check:", ratingData)
+            setHasRated(ratingData.has_rated)
+            setUserRating(ratingData.rating || 0)
+          } else {
+            console.error("Failed to check rating status:", await ratingRes.text())
+          }
+        } catch (err) {
+          console.error("Init error:", err)
+        }
+      })()
+    }, [mainUser.id_u, post.id_p])
+
+  const handleRatingChange = async (event, newValue) => {
+      if (!csrfToken || hasRated) return
+      
+      try {
+        const response = await fetch("http://localhost:8000/api/rating", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "X-XSRF-TOKEN": csrfToken,
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            id_u: mainUser.id_u,
+            id_p: post.id_p,
+            rating: newValue,
+          }),
+        })
+  
+        if (response.ok) {
+          const data = await response.json()
+          console.log("Rating submitted successfully:", data)
+          setHasRated(true)
+          setUserRating(newValue)
+          setPostData(data.post) // Update post with new rating stats
+        } else {
+          const errorData = await response.json()
+          console.error("Rating error:", errorData)
+          alert(errorData.error || "Failed to submit rating.")
+        }
+      } catch (err) {
+        console.error("Rating exception:", err)
+        alert("An error occurred. Please try again.")
+      }
+  }
   
   const handleToggleText = () => {
     setIsTextExpanded(prev => !prev);
@@ -87,6 +167,10 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
     // Otherwise, prepend the backend URL
     return `http://localhost:8000/uploads/${imagePath}`;
   };
+
+  const averageRating = postData.rating_count > 0 
+    ? (postData.total_rating / postData.rating_count).toFixed(1) 
+    : "0.0"
 
   return (
     <Box key={post.id_p}>
@@ -106,7 +190,7 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
               </Grid>
               <Grid size={2} className='grad_result'>
                 <GradeIcon className='star'/>
-                <h6>{(post.total_rating/post.rating_count).toFixed(1)}/5</h6>
+                <h6>{averageRating}/5</h6>
               </Grid>
               <Grid size={5}>
                 <img loading='lazy' src={getImageUrl(post.pic_p)} alt={post.title_p || "Recipe image"} className='post_img' />
@@ -131,7 +215,22 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
             <ButtonGroup variant="outlined" aria-label="Basic button group" className='button_g' sx={buttonGroupStyle}>
               <Button className='rating'>
                 <Stack spacing={1} >
-                  <Rating name={`rating-${post.id_p}`} defaultValue={2.5} precision={0.5} />
+                <Rating 
+                    name={`rating-${post.id_p}`}  
+                    value={userRating || 0} 
+                    onChange={handleRatingChange} 
+                    precision={1} 
+                    disabled={hasRated}
+                    sx={{
+                      opacity: hasRated ? 1 : 0.9,
+                      '& .MuiRating-iconFilled': {
+                        color: hasRated ? '#f9a825' : '#ffb400',
+                      },
+                      '&:hover': {
+                        opacity: hasRated ? 1 : 1,
+                      }
+                    }}
+                  />
                 </Stack>
               </Button>
               <Button onClick={handleToggleComments}>
