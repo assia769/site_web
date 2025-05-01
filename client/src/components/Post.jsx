@@ -241,7 +241,20 @@ const SinglePost = memo(({ post, postUser }) => {
             <Grid container spacing={2}>
               <Grid size={10}>
                 <CardHeader
-                  avatar={<Avatar className="propic3">{postUser.username_u[0]}</Avatar>}
+                  avatar={<div  style={{ cursor: 'pointer' }}>
+                  {postUser.profilpic_u ? (
+                    <Avatar
+                      className="propic3"
+                      src={`http://localhost:8000/images/${postUser.profilpic_u}`} // Use the profile picture URL
+                    />
+                  ) : (
+                    <Avatar
+                      className="propic3"
+                    >
+                      {postUser.username_u[0]} {/* Fallback to user's initial */}
+                    </Avatar>
+                  )}
+                </div>}
                   title={postUser.username_u}
                   subheader={post.date_p}
                   className="userinfo"

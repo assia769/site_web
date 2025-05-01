@@ -8,20 +8,16 @@ import Collapse from '@mui/material/Collapse';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import EditIcon from '@mui/icons-material/Edit';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
 import { useContext } from 'react';
 import { MainUserContext } from './context/MainUserContext';
 import '../style/Body.css';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
-import {  Divider } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import UpdateMainUserInfo from './UpdateMainUserInfo';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import UpdateProfilePic from './UpdateProfilePic';
 
 // Fix the styled component to properly handle the expand prop
 const ExpandMore = styled((props) => {
@@ -39,6 +35,8 @@ export default function UserDetaInfo() {
     const mainUser = useContext(MainUserContext);
     const [expanded, setExpanded] = useState(false);
     const [open, setOpen] = useState(false);
+    const [modifyPic, setModifyPic]= useState(false);
+    const [menuAnchor, setMenuAnchor] = useState(null); 
     
 
     const handleExpandClick = () => {
@@ -47,20 +45,65 @@ export default function UserDetaInfo() {
 
     const handleClickOpen = () => {
       setOpen(true);
+      handleMenuClose();
+  };
+
+  const handleClickOpenPic = () => {
+    setModifyPic(true);
+    handleMenuClose();
+};
+
+  const handleMenuOpen = (event) => {
+    setMenuAnchor(event.currentTarget); // Set the anchor element for the menu
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null); // Close the menu
+  };
+
+  const handleLogout = () => {
+    console.log('Logout clicked'); // Add your logout logic here
+    handleMenuClose(); // Close the menu
   };
   
-    const handleClose = () => {
-      setOpen(false);
-  };
 
 
     return (
       <Card className='profile'>
         <CardHeader
+          avatar={<div onClick={handleClickOpenPic} style={{ cursor: 'pointer' }}>
+          {mainUser.profilpic_u ? (
+            <Avatar
+              className="propic3"
+              src={`http://localhost:8000/images/${mainUser.profilpic_u}`} // Use the profile picture URL
+              sx={{ width: '80px', height: '80px' }}
+            />
+          ) : (
+            <Avatar
+              className="propic3"
+              sx={{ width: '80px', height: '80px' }}
+            >
+              {mainUser.username_u[0]} {/* Fallback to user's initial */}
+            </Avatar>
+          )}
+        </div>}
           action={
-            <IconButton aria-label="settings" onClick={handleClickOpen}>
-              <EditIcon className='profileicon' />
-            </IconButton>
+            <>
+              <IconButton aria-label="settings" onClick={handleMenuOpen}>
+                <MoreVertIcon className='profileicon' />
+              </IconButton>
+              <Menu
+                anchorEl={menuAnchor}
+                open={Boolean(menuAnchor)}
+                onClose={handleMenuClose}
+                sx={{'& .MuiPaper-root': {
+      backgroundColor: '#2B2B2B', // Set the background color
+      color: 'white',},}} // Set the text color}}
+              >
+                <MenuItem onClick={handleClickOpen}>Edit Profile</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
+            </>
           }
           title={`Name : ${mainUser ? mainUser.username_u : "?"}`}
           subheader={`ID : ${mainUser ? mainUser.id_u : "?"}`}
@@ -80,33 +123,8 @@ export default function UserDetaInfo() {
             <Typography sx={{ marginBottom: 2 }}>Birthday: {mainUser ? mainUser.birthday_u : "?"}</Typography>
           </CardContent>
         </Collapse>
-        <Dialog
-                                        open={open}
-                                        onClose={handleClose}
-                                        aria-labelledby="alert-dialog-title"
-                                        aria-describedby="alert-dialog-description"
-                                    >
-                                        <Box className="newPost_window">
-                                        <DialogTitle id="alert-dialog-title">
-                                        {"update profile"}
-                                        </DialogTitle>
-                                        <Divider />
-                                        <DialogContent>
-                                            <Box className="newpost_text">
-                                                <TextField id="filled-basic" label="Name" variant="filled" className='text_addpost' defaultValue={mainUser ? mainUser.username_u : "?"}/>
-                                                <TextField id="filled-basic" label="Age" variant="filled" className='text_addpost' defaultValue={mainUser ? mainUser.birthday_u : "?"}/>
-
-                                            </Box>
-                                        
-                                        </DialogContent>
-                                        <DialogActions>
-                                            <Button onClick={handleClose} className='button_addpost'>Cancel</Button>
-                                            <Button onClick={handleClose} className='button_addpost 'autoFocus>
-                                                Post
-                                            </Button>
-                                        </DialogActions>
-                                        </Box>
-                                    </Dialog>
+         <UpdateMainUserInfo setOpen={setOpen} mainUser={mainUser} open={open}/>
+         <UpdateProfilePic setOpen={setModifyPic} mainUser={mainUser} open={modifyPic}/>
       </Card>
     );
 } 

@@ -63,7 +63,22 @@ export default function Header(){
                         <BottomNavigationAction
                             label="Profile"
                             value="Profile"
-                            icon={<Avatar sx={{width:24,height:24,fontSize:'0.75rem',color:'#B22222',backgroundColor:'#2B2B2B',transition: '0.3s','&:hover': {backgroundColor: '#B22222',color: '#2B2B2B',boxShadow:10}}}>{MainUser ? MainUser.username_u[0] : "?"}</Avatar>}
+                            icon={<div style={{ cursor: 'pointer' }}>
+                            {MainUser && MainUser.profilpic_u ? (
+                              <Avatar
+                                className="propic3"
+                                src={`http://localhost:8000/images/${MainUser.profilpic_u}`}
+                                sx={{ width: '25px', height: '25px' }}
+                              />
+                            ) : (
+                              <Avatar
+                                className="propic3"
+                                sx={{ width: '25px', height: '25px' }}
+                              >
+                                {MainUser?.username_u ? MainUser.username_u[0] : '?'}
+                              </Avatar>
+                            )}
+                          </div>}
                             component={Link}
                             to="/profile"
                         />

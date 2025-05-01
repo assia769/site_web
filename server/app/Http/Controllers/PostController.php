@@ -25,7 +25,7 @@ class PostController extends Controller
     // Validate basic fields
     $validator = Validator::make($request->all(), [
         'title_p' => 'required|string|max:255',
-        'discription_p' => 'required|string',
+        'discription_p' => 'required|string', 
         'statu_p' => 'required|string|in:public,private,archived',
         'id_u' => 'required|integer',
         'date_p' => 'required',  // Less strict validation for the date
