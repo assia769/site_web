@@ -177,21 +177,55 @@ const SignUp = () => {
       // Ensure we get a fresh CSRF token before submission
       await axios.get('/sanctum/csrf-cookie');
       
-      const response = await axios.post('/api/register', {
-        username_u: username,
-        password_u: password,
-        email: email,
-        birthday_u: dob,
-      });
+      // const response = await axios.post('/api/register', {
+      //   username_u: username,
+      //   password_u: password,
+      //   email: email,
+      //   birthday_u: dob,
+      // }, {
+      //   withCredentials: true // 🔥 OBLIGATOIRE ici
+      // });
+      
+      const response = await axios.post(
+        'http://localhost:8000/api/register',
+        {
+          username_u: username,
+          password_u: password,
+          email: email,
+          birthday_u: dob
+        },
+        {
+          withCredentials: true, // 🔥 CRUCIAL
+          headers: {
+            'X-XSRF-TOKEN': decodeURIComponent(
+              document.cookie
+                .split('; ')
+                .find(row => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1] || ''
+            ),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }
+      );
+      
   
       console.log('Registration response:', response);
       
-      if (response.data.success) {
+      // if (response.data.success) {
+      //   alert("Compte créé avec succès!");
+      //   navigate('/login');
+      // } else {
+      //   setError(response.data.message || "Une erreur est survenue lors de l'inscription");
+      // }
+      if (response?.data?.success) {
+        console.log("Inscription réussie :", response.data);
         alert("Compte créé avec succès!");
         navigate('/login');
       } else {
-        setError(response.data.message || "Une erreur est survenue lors de l'inscription");
+        setError(response.data?.message || "Erreur inconnue lors de l'inscription");
       }
+      
     } catch (error) {
       console.error("Erreur détaillée lors de l'inscription:", error);
       
