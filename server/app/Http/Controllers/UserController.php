@@ -82,6 +82,35 @@ class UserController extends Controller
         return response()->json(['message' => 'User updated successfully', 'user' => $user]);
     }
 
+    public function updateconn(Request $request, string $id)
+{
+    $user = User::find($id);
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    $validator = Validator::make($request->all(), [
+        'email' => 'string|email|max:255|unique:users,email,' . $user->id_u . ',id_u',
+        'password_u' => 'string|min:8',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json($validator->errors(), 400);
+    }
+
+    // If password is being updated, hash it
+    if ($request->has('password_u')) {
+        $request->merge([
+            'password_u' => Hash::make($request->password_u)
+        ]);
+    }
+
+    $user->update($request->only(['email', 'password_u']));
+
+    return response()->json(['message' => 'User updated successfully', 'user' => $user]);
+}
+
     /**
      * Remove the specified resource from storage.
      */

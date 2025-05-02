@@ -17,6 +17,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'show']);
 Route::put('/users/{id}', [UserController::class, 'update']);
+Route::put('/usersconn/{id}', [UserController::class, 'updateconn']);
 Route::put('/userspic/{id}', [UserController::class, 'updatePic']);
 
 

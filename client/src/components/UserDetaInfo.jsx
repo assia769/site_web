@@ -18,6 +18,7 @@ import UpdateMainUserInfo from './UpdateMainUserInfo';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import UpdateProfilePic from './UpdateProfilePic';
+import UpdateMainUserConn from './UpdateMainUserConn';
 
 // Fix the styled component to properly handle the expand prop
 const ExpandMore = styled((props) => {
@@ -36,6 +37,7 @@ export default function UserDetaInfo() {
     const [expanded, setExpanded] = useState(false);
     const [open, setOpen] = useState(false);
     const [modifyPic, setModifyPic]= useState(false);
+    const [userCon, setUserCon] = useState(false);
     const [menuAnchor, setMenuAnchor] = useState(null); 
     
 
@@ -45,6 +47,11 @@ export default function UserDetaInfo() {
 
     const handleClickOpen = () => {
       setOpen(true);
+      handleMenuClose();
+  };
+
+    const handleClickOpenCon = () => {
+      setUserCon(true);
       handleMenuClose();
   };
 
@@ -101,6 +108,7 @@ export default function UserDetaInfo() {
       color: 'white',},}} // Set the text color}}
               >
                 <MenuItem onClick={handleClickOpen}>Edit Profile</MenuItem>
+                <MenuItem onClick={handleClickOpenCon}>change password</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </>
@@ -125,6 +133,7 @@ export default function UserDetaInfo() {
         </Collapse>
          <UpdateMainUserInfo setOpen={setOpen} mainUser={mainUser} open={open}/>
          <UpdateProfilePic setOpen={setModifyPic} mainUser={mainUser} open={modifyPic}/>
+         <UpdateMainUserConn setOpen={setUserCon} mainUser={mainUser} open={userCon}/>
       </Card>
     );
 } 
