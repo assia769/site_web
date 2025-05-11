@@ -80,7 +80,7 @@ export default function Header(){
                             )}
                           </div>}
                             component={Link}
-                            to="/profile"
+                            to={MainUser ? `/user/${MainUser.id_u}/profile` : "/"}
                         />
                         
                         <BottomNavigationAction 
@@ -96,7 +96,7 @@ export default function Header(){
                             value="saved posts"
                             icon={<BookmarksIcon/>}
                             component={Link}
-                            to="/myposts"
+                            to={MainUser ? `/user/${MainUser.id_u}/myposts` : "/"}
                         />
 
                     </BottomNavigation>

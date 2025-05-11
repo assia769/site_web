@@ -21,7 +21,7 @@ export default function ProfileDetailes() {
                                 {MainUser && MainUser.profilpic_u ? (
                                     <Avatar
                                         className="propic3"
-                                        src={`http://localhost:8000/images/${MainUser.profilpic_u}`} // Use the profile picture URL
+                                        src={`http://localhost:8000/images/${MainUser.profilpic_u}`}
                                         sx={{ width: '60px', height: '60px' }}
                                     />
                                 ) : (
@@ -29,12 +29,12 @@ export default function ProfileDetailes() {
                                         className="propic3"
                                         sx={{ width: '60px', height: '60px' }}
                                     >
-                                        {MainUser ? MainUser.username_u[0] : '?'} {/* Fallback to user's initial */}
+                                        {MainUser && MainUser.username_u ? MainUser.username_u[0] : '?'} {/* Added safety check */}
                                     </Avatar>
                                 )}
                             </div>
                             <Typography gutterBottom className="proname">
-                                {MainUser ? MainUser.username_u : '?'}
+                                {MainUser && MainUser.username_u ? MainUser.username_u : 'Loading...'}
                             </Typography>
                         </CardContent>
                     </React.Fragment>

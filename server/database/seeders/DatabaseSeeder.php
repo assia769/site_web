@@ -1,10 +1,11 @@
 <?php
-
+// backend/database/seeders/DatabaseSeeder.php
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Admin;
+use App\Models\Admine;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Star;
@@ -14,26 +15,27 @@ use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-     public function run()
+    public function run()
     {
         // Créer 10 utilisateurs
         for ($i = 1; $i <= 10; $i++) {
             User::create([
                 'username_u' => 'user' . $i,
-                'password_u' => Hash::make('password' . $i),
+               'password_u' => Hash::make('password' . $i),
                 'email' => 'user' . $i . '@example.com',
                 'birthday_u' => '1990-01-' . ($i % 28 + 1),
             ]);
         }
 
-        // Créer un admin
-        Admin::create([
+        //Créer un admin
+        Admine::create([
             'name_a' => 'Admin Principal',
             'username_a' => 'admin',
             'password_a' => Hash::make('admin123'),
             'nationality_a' => 'Marocain',
             'birthday_a' => '1985-05-15',
             'phonenumb_a' => '+212600000000',
+            'email' => 'admin@gmail.com',
         ]);
 
         // Créer 30 posts

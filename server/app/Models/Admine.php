@@ -7,23 +7,28 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class Admine extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $primaryKey = 'id_u';
-    
+    protected $table = 'admine';
+    protected $primaryKey = 'id_a';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'username_u',
-        'profilpic_u',
-        'birthday_u',
-        'password_u',
-        'email',
+        'name_a',
+        'profpic_a',
+        'nationality_a',
+        'birthday_a',
+        'username_a',
+        'password_a',
+        'phonenumb_a',
+        'email', // Ajoutez cette ligne
+
     ];
 
     /**
@@ -32,7 +37,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password_u',
+        'password_a',
     ];
 
     /**
@@ -41,18 +46,6 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'birthday_u' => 'date',
+        'birthday_a' => 'date',
     ];
-
-    // Relation avec les posts
-    public function posts()
-    {
-        return $this->hasMany(Post::class, 'id_u', 'id_u');
-    }
-
-    // Relation avec les commentaires
-    public function comments()
-    {
-        return $this->hasMany(Comment::class, 'id_u', 'id_u');
-    }
 }

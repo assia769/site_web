@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('username_a', 50)->unique();
             $table->string('password_a', 255);
             $table->string('phonenumb_a', 20)->unique()->nullable();
+            $table->string('email', 50)->unique();
             $table->timestamps();
         });
 

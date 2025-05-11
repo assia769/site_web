@@ -8,6 +8,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaveController;
 use App\Http\Controllers\StarController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AuthController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -41,3 +43,13 @@ Route::delete('/save/{id}', [SaveController::class, 'destroy']);
 // Rating routes
 Route::post('/rating', [StarController::class, 'store']);
 Route::post('/rating/check', [StarController::class, 'checkRating']);
+
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::get('/dashboard/stats', [DashboardController::class, 'getStats']);
+Route::get('/dashboard/posts-per-month', [DashboardController::class, 'getPostsPerMonth']);
+Route::get('/dashboard/ratings-distribution', [DashboardController::class, 'getRatingsDistribution']);
+Route::get('/dashboard/popular-recipes', [DashboardController::class, 'getPopularRecipes']);
+Route::get('/dashboard/user-activity', [DashboardController::class, 'getUserActivity']);

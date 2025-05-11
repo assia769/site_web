@@ -296,17 +296,29 @@ function Post() {
   const [userSaves, setUserSaves] = useState([]);
   
   useEffect(() => {
-    if (Saves && mainUser) {
-      // Get all saved data for the main user (keeping original order from Saves table)
-      const mainUserSaves = Saves.filter(save => save.id_u === mainUser.id_u);
-      setUserSaves(mainUserSaves);
-      setUserSavedPosts(mainUserSaves.map(save => save.id_p));
+    if (mainUser) {
+      // Check if Saves is an array before filtering
+      if (Array.isArray(Saves)) {
+        // Get all saved data for the main user (keeping original order from Saves table)
+        const mainUserSaves = Saves.filter(save => save.id_u === mainUser.id_u);
+        setUserSaves(mainUserSaves);
+        setUserSavedPosts(mainUserSaves.map(save => save.id_p));
+      } else {
+        // If Saves is not an array, set empty arrays
+        console.log("Saves is not an array:", Saves);
+        setUserSaves([]);
+        setUserSavedPosts([]);
+      }
     }
   }, [Saves, mainUser]);
 
   // Then filter posts based on the saved IDs and search criteria
   useEffect(() => {
-    if (Posts && Users && userSavedPosts.length > 0 && userSaves.length > 0) {
+    if (!Array.isArray(Posts) || !Array.isArray(Users)) {
+      return;
+    }
+    
+    if (userSavedPosts.length > 0 && userSaves.length > 0) {
       // Instead of filtering posts first, we'll start with the save order
       // and map each save to its corresponding post
       
@@ -341,11 +353,18 @@ function Post() {
       
       setDisplayedPosts(orderedPosts.slice(0, itemsPerPage));
       setHasMore(orderedPosts.length > itemsPerPage);
+    } else {
+      // User has no saved posts
+      setDisplayedPosts([]);
+      setHasMore(false);
     }
   }, [Posts, Users, userSavedPosts, searchTerm, searchType, userSaves]);
   
   const fetchMoreData = () => {
-    if (!Posts || !userSaves || userSaves.length === 0) return;
+    if (!Array.isArray(Posts) || !Array.isArray(userSaves) || userSaves.length === 0) {
+      setHasMore(false);
+      return;
+    }
     
     if (displayedPosts.length >= userSavedPosts.length) {
       setHasMore(false);
@@ -392,8 +411,26 @@ function Post() {
     }, 500);
   };
 
-  if (!Users || !Posts || !Saves || !mainUser) {
+  if (!Users || !Posts || !mainUser) {
     return <div className="loadersave"></div>;
+  }
+
+  // Show a message when user has no saved posts
+  if (Array.isArray(userSaves) && userSaves.length === 0) {
+    return (
+      <Box className="no-saved-posts" sx={{ 
+        textAlign: 'center', 
+        padding: '3rem 1rem',
+        color: 'white'
+      }}>
+        <Typography variant="h5" component="h2">
+          You haven't saved any posts yet
+        </Typography>
+        <Typography variant="body1" sx={{ mt: 2 }}>
+          When you save posts, they will appear here
+        </Typography>
+      </Box>
+    );
   }
 
   return (
