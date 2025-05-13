@@ -40,7 +40,18 @@ export default function Comments({post}) {
                                             <CardHeader
                                                 avatar={
                                                     <Avatar className='propic3'>
-                                                        {commentUser ? commentUser.username_u.charAt(0).toUpperCase() : 'U'}
+                                                        {commentUser.profilpic_u ? (
+                                                            <Avatar
+                                                            className="propic3"
+                                                            src={`http://localhost:8000/images/${commentUser.profilpic_u}`} // Use the profile picture URL
+                                                            />
+                                                        ) : (
+                                                            <Avatar
+                                                            className="propic3"
+                                                            >
+                                                            {commentUser.username_u[0]} {/* Fallback to user's initial */}
+                                                            </Avatar>
+                                                        )}
                                                     </Avatar>
                                                 }
                                                 title={commentUser ? commentUser.username_u : 'Unknown User'}

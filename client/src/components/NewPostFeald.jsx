@@ -14,6 +14,7 @@ import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import { MainUserContext } from './context/MainUserContext';
 import '../style/Body.css';
+import '../style/Posts.css';  // Import the CSS file with animations
 
 export default function NewPostFeald() {
     const [csrfToken, setCsrfToken] = useState('');

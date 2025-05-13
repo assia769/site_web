@@ -1,10 +1,10 @@
 import MainUserSavedPosts from "./MainUserSavedPosts";
+import '../style/Posts.css';
 
 export default function SavedPosts(){
-        
     return(
-        <div className="savedpost">
-                <MainUserSavedPosts />
+        <div className="saved-posts-page">
+            <MainUserSavedPosts />
         </div>
     );
 }

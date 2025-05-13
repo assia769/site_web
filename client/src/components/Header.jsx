@@ -2,8 +2,6 @@ import Grid from '@mui/material/Grid2';
 import Paper from '@mui/material/Paper';
 import '../style/Header.css';
 import logo from '../assets/logo.png'
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import Avatar from '@mui/material/Avatar';
 import FormControl from '@mui/material/FormControl';

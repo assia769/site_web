@@ -1,5 +1,36 @@
 .header{
     background-color: #8B0000; /* Full viewport height */
     flex-direction: column;
+    transition: transform 0.3s ease-in-out;
+    animation: dropDown 0.5s ease-out forwards;
 }
+
+.header.hidden {
+    transform: translateY(-100%);
+}
+
+.header.visible {
+    transform: translateY(0);
+}
+
+/* Add a subtle shadow when header is visible */
+.header.visible {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Add smooth transition for all header elements */
+.header * {
+    transition: all 0.3s ease-in-out;
+}
+
+
+@keyframes dropDown {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
 

@@ -7,12 +7,13 @@ import '../style/Body.css';
 import Typography from '@mui/material/Typography';
 import { useContext } from 'react';
 import { MainUserContext } from './context/MainUserContext';
+import '../style/Posts.css';
 
 export default function ProfileDetailes() {
     const MainUser = useContext(MainUserContext);
 
     return (
-        <>
+        <div className="profile-section">
             <Box>
                 <Card variant="outlined" className="card1">
                     <React.Fragment>
@@ -40,6 +41,6 @@ export default function ProfileDetailes() {
                     </React.Fragment>
                 </Card>
             </Box>
-        </>
+        </div>
     );
 }

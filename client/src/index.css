@@ -1,7 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  background-color: #2B2B2B;
+  background-color: #F8F5F2;
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+  display: none;
+}
+
+
 
 

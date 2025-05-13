@@ -338,13 +338,11 @@ const SinglePost = memo(({ post, postUser }) => {
               />
             )}
 
-            {showComments && (
-              <div className="commentchoi">
-                <Divider />
-                <CommentInput userId={mainUser.id_u} postId={post.id_p} />
-                <Comment post={post} />
-              </div>
-            )}
+            <div className={`commentchoi ${showComments ? 'open' : ''}`}>
+              <Divider />
+              <CommentInput userId={mainUser.id_u} postId={post.id_p} />
+              <Comment post={post} />
+            </div>
           </CardContent>
         </React.Fragment>
       </Card>

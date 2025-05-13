@@ -1,0 +1,258 @@
+/* Post animations */
+.post {
+    opacity: 0;
+    transform: translateY(50px);
+    animation: slideUp 0.5s ease forwards;
+}
+
+/* New post field animation */
+.newPost {
+    opacity: 0;
+    transform: translateY(50px);
+    animation: slideUp 0.5s ease forwards;
+}
+
+/* Profile section animation */
+.profile-section {
+    opacity: 0;
+    transform: translateY(50px);
+    animation: slideUp 0.5s ease forwards;
+}
+
+/* Profile page animations */
+.profile-page {
+    opacity: 0;
+    transform: translateY(50px);
+    animation: slideUp 0.5s ease forwards;
+}
+
+.user-info-section {
+    opacity: 0;
+    transform: translateY(50px);
+    animation: slideUp 0.5s ease forwards;
+}
+
+/* Saved posts page animation */
+.saved-posts-page {
+    opacity: 0;
+    transform: translateY(50px);
+    animation: slideUp 0.5s ease forwards;
+}
+
+/* Button Styles */
+.button_g {
+    margin-top: 15px !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+    background: rgba(43, 43, 43, 0.1) !important;
+    backdrop-filter: blur(5px);
+    min-height: 45px !important;
+}
+
+.button_g .MuiButton-root {
+    padding: 12px 20px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.3s ease !important;
+    height: 100% !important;
+    min-height: 45px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.button_g .MuiButton-root:hover {
+    background-color: rgba(178, 34, 34, 0.9) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Rating Stars */
+.MuiRating-root {
+    transition: all 0.3s ease !important;
+    padding: 4px 0 !important;
+    background: transparent !important;
+}
+
+.MuiRating-root:hover {
+    transform: scale(1.05);
+}
+
+.MuiRating-iconFilled {
+    color: #FFD700 !important;
+    font-size: 1.8rem !important;
+}
+
+.MuiRating-iconHover {
+    color: #FFD700 !important;
+}
+
+.MuiRating-iconEmpty {
+    font-size: 1.8rem !important;
+}
+
+/* Average Rating Display */
+.grad_result {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px;
+}
+
+.grad_result .star {
+    font-size: 1.8rem !important;
+    color: #FFD700;
+}
+
+.grad_result h6 {
+    font-size: 1.2rem;
+    color: #FFD700;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Rating Button in Button Group */
+.button_g .rating {
+    min-width: 120px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.button_g .rating .MuiRating-root {
+    margin: 0 !important;
+}
+
+/* Comment Button */
+.MuiButton-root .ModeCommentIcon {
+    transition: transform 0.3s ease;
+    font-size: 1.3rem !important;
+    margin-right: 8px !important;
+}
+
+.MuiButton-root:hover .ModeCommentIcon {
+    transform: scale(1.1);
+}
+
+/* Report Button */
+.MuiButton-root .ReportIcon {
+    transition: transform 0.3s ease;
+    font-size: 1.3rem !important;
+    margin-right: 8px !important;
+}
+
+.MuiButton-root:hover .ReportIcon {
+    transform: scale(1.1);
+}
+
+/* Save Button */
+.MuiButton-root .BookmarkIcon {
+    transition: transform 0.3s ease;
+    font-size: 1.3rem !important;
+    margin-right: 8px !important;
+}
+
+.MuiButton-root:hover .BookmarkIcon {
+    transform: scale(1.1);
+}
+
+/* Button Group Dividers */
+.button_g .MuiButtonGroup-grouped:not(:last-of-type) {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Active Button State */
+.button_g .MuiButton-root.Mui-selected {
+    background-color: rgba(178, 34, 34, 0.8) !important;
+    color: white !important;
+}
+
+/* Button Text */
+.button_g .MuiButton-root span {
+    font-size: 0.95rem !important;
+    line-height: 1.2 !important;
+}
+
+@keyframes slideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Add animation delay for each post */
+.post:nth-child(1) { animation-delay: 0.1s; }
+.post:nth-child(2) { animation-delay: 0.2s; }
+.post:nth-child(3) { animation-delay: 0.3s; }
+.post:nth-child(4) { animation-delay: 0.4s; }
+.post:nth-child(5) { animation-delay: 0.5s; }
+.post:nth-child(6) { animation-delay: 0.6s; }
+.post:nth-child(7) { animation-delay: 0.7s; }
+.post:nth-child(8) { animation-delay: 0.8s; }
+.post:nth-child(9) { animation-delay: 0.9s; }
+.post:nth-child(10) { animation-delay: 1s; }
+
+/* Comments Section Animation */
+.commentchoi {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(-20px);
+    margin: 0;
+    padding: 0;
+    visibility: hidden;
+}
+
+.commentchoi.open {
+    max-height: 2000px;
+    opacity: 1;
+    transform: translateY(0);
+    margin: 20px 40px;
+    padding: 10px 0;
+    visibility: visible;
+}
+
+.comment_comp {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: commentSlideUp 0.1s ease forwards;
+}
+
+@keyframes commentSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Add animation delay for each comment */
+.comment_comp:nth-child(1) { animation-delay: 0.1s; }
+.comment_comp:nth-child(2) { animation-delay: 0.2s; }
+.comment_comp:nth-child(3) { animation-delay: 0.3s; }
+.comment_comp:nth-child(4) { animation-delay: 0.4s; }
+.comment_comp:nth-child(5) { animation-delay: 0.5s; }
+
+/* Comment input animation */
+.comment_input_comp {
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: commentSlideUp 0.1s ease forwards;
+    animation-delay: 0.1s;
+}
+
+/* Comment input animation */
+.comment_input_comp:nth-child(1) { animation-delay: 0.1s; }
+.comment_input_comp:nth-child(2) { animation-delay: 0.2s; }
+.comment_input_comp:nth-child(3) { animation-delay: 0.3s; }
+.comment_input_comp:nth-child(4) { animation-delay: 0.4s; }
+.comment_input_comp:nth-child(5) { animation-delay: 0.5s; } 

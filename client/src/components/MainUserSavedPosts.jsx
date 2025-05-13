@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import '../style/Body.css';
+import '../style/Posts.css';  // Import the new CSS file
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
@@ -265,13 +266,11 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
                           />
             )}
             
-            {showComments && (
-              <div className='commentchoi'>
-                <Divider />
-                <CommentInput userId={mainUser.id_u} postId={post.id_p}/>
-                <Comment post={post} />
-              </div>
-            )}
+            <div className={`commentchoi ${showComments ? 'open' : ''}`}>
+              <Divider />
+              <CommentInput userId={mainUser.id_u} postId={post.id_p}/>
+              <Comment post={post} />
+            </div>
           </CardContent>
         </React.Fragment>
       </Card>
