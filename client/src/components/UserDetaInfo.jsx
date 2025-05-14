@@ -19,6 +19,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import UpdateProfilePic from './UpdateProfilePic';
 import UpdateMainUserConn from './UpdateMainUserConn';
+import axios from 'axios';
 
 // Fix the styled component to properly handle the expand prop
 const ExpandMore = styled((props) => {
@@ -68,9 +69,35 @@ export default function UserDetaInfo() {
     setMenuAnchor(null); // Close the menu
   };
 
-  const handleLogout = () => {
-    console.log('Logout clicked'); // Add your logout logic here
-    handleMenuClose(); // Close the menu
+  const handleLogout = async () => {
+    try {
+      // Clear verification status
+      sessionStorage.removeItem('verified');
+      
+      // Call the logout API
+      const response = await axios.post('http://localhost:8000/api/logout', {}, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        withCredentials: true
+      });
+
+      if (response.data.success) {
+        // Clear all session data
+        sessionStorage.clear();
+        localStorage.removeItem('token');
+        
+        // Navigate to verification page
+        window.location.href = '/verification';
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Even if there's an error, clear local data and redirect
+      sessionStorage.clear();
+      localStorage.removeItem('token');
+      window.location.href = '/verification';
+    }
   };
   
 
@@ -104,8 +131,8 @@ export default function UserDetaInfo() {
                 open={Boolean(menuAnchor)}
                 onClose={handleMenuClose}
                 sx={{'& .MuiPaper-root': {
-      backgroundColor: '#2B2B2B', // Set the background color
-      color: 'white',},}} // Set the text color}}
+      backgroundColor: '#E5E5E5', // Set the background color
+      color: '#333333',},}} // Set the text color}}
               >
                 <MenuItem onClick={handleClickOpen}>Edit Profile</MenuItem>
                 <MenuItem onClick={handleClickOpenCon}>change password</MenuItem>

@@ -215,11 +215,12 @@ const Login = () => {
       console.log("Résultat de login():", result);
   
       if (result.success) {
-        // Stocker les informations de l'utilisateur dans le sessionStorage
+        // Store user information in sessionStorage
         sessionStorage.setItem('user', JSON.stringify(result.user));
         sessionStorage.setItem('role', result.role);
+        sessionStorage.setItem('verified', 'true');
         
-        // Rediriger selon le rôle
+        // Redirect based on role
         if (result.role === 'admin') {
           navigate('/dashboard');
         } else {

@@ -13,7 +13,7 @@ function BodyApp({ id }) {
   const [mainUser, setMainUser] = useState(null);
   const [posts, setPosts] = useState(null);
   const [users, setUsers] = useState(null);
-  const [comments, setComments] = useState(null);
+  const [comments, setComments] = useState([]);
   const [saves, setSaves] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('title');
@@ -68,7 +68,7 @@ function BodyApp({ id }) {
     <MainUserContext.Provider value={mainUser}>
       <UsersContext.Provider value={users}> 
         <PostsContext.Provider value={posts}>
-          <CommentsContext.Provider value={comments}>
+          <CommentsContext.Provider value={{ comments, setComments }}>
             <SaveContext.Provider value={saves}> 
               <SearchContext.Provider value={{searchTerm, searchType, setSearchTerm, setSearchType, isLoading}}>
                 <Header />

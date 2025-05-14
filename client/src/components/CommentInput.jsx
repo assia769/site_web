@@ -7,22 +7,21 @@ import Grid from '@mui/material/Grid2';
 import SendIcon from '@mui/icons-material/Send';
 import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';    
+import { CommentsContext } from './context/CommentsContext';
 
-
-export default function CommentInput({userId, postId}){
-    const [comment,setComment] = useState('');
+export default function CommentInput({ userId, postId }) {
+    const [comment, setComment] = useState('');
     const [csrfToken, setCsrfToken] = useState('');
+    const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
+    const { comments, setComments } = useContext(CommentsContext);
     
-        // Modified CommentInput.jsx with proper CSRF handling
     useEffect(() => {
         fetch('http://localhost:8000/sanctum/csrf-cookie', {
             method: 'GET',
-            credentials: 'include' // Important for cookies
+            credentials: 'include'
         })
         .then(response => {
-            // Get the CSRF token from cookies
             const token = document.cookie
                 .split('; ')
                 .find(row => row.startsWith('XSRF-TOKEN='))
@@ -32,12 +31,30 @@ export default function CommentInput({userId, postId}){
                 setCsrfToken(decodeURIComponent(token));
             }
         })
-        .catch(error => console.error('Error fetching CSRF token:', error));
+        .catch(error => {
+            console.error('Error fetching CSRF token:', error);
+            setAlert({
+                open: true,
+                message: "Failed to initialize comment form",
+                severity: "error"
+            });
+        });
     }, []);
+
+    const handleAlertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAlert(prev => ({ ...prev, open: false }));
+    };
     
-    const handleAddComment = async() => {
-        if(!comment.trim()){
-            alert('Please enter a comment');
+    const handleAddComment = async () => {
+        if (!comment.trim()) {
+            setAlert({
+                open: true,
+                message: "Please enter a comment",
+                severity: "error"
+            });
             return;
         }
     
@@ -49,7 +66,7 @@ export default function CommentInput({userId, postId}){
                     'X-XSRF-TOKEN': csrfToken,
                     'Accept': 'application/json'
                 },
-                credentials: 'include', // Important for cookies
+                credentials: 'include',
                 body: JSON.stringify({
                     id_u: userId,
                     id_p: postId,
@@ -58,47 +75,64 @@ export default function CommentInput({userId, postId}){
             });
     
             if (response.ok) {
+                const newComment = await response.json();
+                // Add the new comment to the comments list
+                setComments(prevComments => [...prevComments, newComment]);
                 setComment(''); // Clear the input field
-                alert('Comment added successfully!');
+                setAlert({
+                    open: true,
+                    message: "Comment added successfully!",
+                    severity: "success"
+                });
             } else {
                 const errorData = await response.json();
-                alert(errorData.message || 'Failed to add comment.');
+                setAlert({
+                    open: true,
+                    message: errorData.message || "Failed to add comment",
+                    severity: "error"
+                });
             }
         } catch (err) {
             console.error(err);
-            alert('An error occurred. Please try again.');
+            setAlert({
+                open: true,
+                message: "An error occurred. Please try again",
+                severity: "error"
+            });
         }
     }
-    return(
+
+    return (
         <>
-                    <Box>
-                        <Card variant="outlined" className="comment_input_comp" >
-                                <CardContent>
-                                        <Typography component="div" gutterBottom className='comment_input'>
-                                            <Grid container spacing={2}>
-                                                <Grid size={10}>
-                                                    <Box className="comment_feald">
-                                                        <TextField fullWidth 
-                                                         label="comment" 
-                                                         id="fullWidth" 
-                                                         value={comment}
-                                                         onChange={(e)=>setComment(e.target.value)}
-                                                        />
-                                                    </Box>
-                                                </Grid>
-                                                <Grid size={2}>
-                                                    <Button className='send' onClick={handleAddComment}>
-                                                        <div className='send_ins'>
-                                                            send
-                                                            <SendIcon />
-                                                        </div>
-                                                    </Button>
-                                                </Grid>
-                                            </Grid>   
-                                        </Typography>
-                                </CardContent>
-                        </Card>
-                    </Box>
+            <Box>
+                <Card variant="outlined" className="comment_input_comp">
+                    <CardContent>
+                        <Typography component="div" gutterBottom className='comment_input'>
+                            <Grid container spacing={2}>
+                                <Grid size={10}>
+                                    <Box className="comment_feald">
+                                        <TextField 
+                                            fullWidth 
+                                            label="comment" 
+                                            id="fullWidth" 
+                                            value={comment}
+                                            onChange={(e) => setComment(e.target.value)}
+                                        />
+                                    </Box>
+                                </Grid>
+                                <Grid size={2}>
+                                    <Button className='send' onClick={handleAddComment}>
+                                        <div className='send_ins'>
+                                            send
+                                            <SendIcon />
+                                        </div>
+                                    </Button>
+                                </Grid>
+                            </Grid>   
+                        </Typography>
+                    </CardContent>
+                </Card>
+            </Box>
         </>
     );
 }

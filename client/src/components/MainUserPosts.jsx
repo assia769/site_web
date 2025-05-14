@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import GradeIcon from '@mui/icons-material/Grade';
 import CardHeader from '@mui/material/CardHeader';
-import { Button, Divider } from '@mui/material';
+import { Button, Divider, Snackbar, Alert } from '@mui/material';
 import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -44,15 +44,15 @@ const buttonGroupStyle = {
   '& .MuiButton-root': {
     flex: 1,
     justifyContent: 'center',
-    color: '#E6E6E6',
+    color: '#E67E22',
     background:'transparent',
     transition: '0.3s',
     outline: 'none',
     border: 'none',
     marginBottom:'-3%',
     '&:hover': {
-      color: '#2B2B2B',
-      backgroundColor: "#B22222",
+      color: '#333333',
+      backgroundColor: "#E67E22",
       boxShadow: 10
     },
     '&:focus, &:active, &:focus-visible': {
@@ -67,6 +67,7 @@ const SinglePost = memo(({ post, mainUser }) => {
   const [isTextExpanded, setIsTextExpanded] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [reportAlert, setReportAlert] = useState({ open: false, message: "", severity: "success" });
   
   const truncatedText = post.discription_p.slice(0, 200) + '...';
 
@@ -171,6 +172,13 @@ const SinglePost = memo(({ post, mainUser }) => {
     ? (postData.total_rating / postData.rating_count).toFixed(1) 
     : "0.0"
   
+  const handleReportAlertClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setReportAlert(prev => ({ ...prev, open: false }));
+  };
+
   return (
     <Box key={post.id_p}>
       <Card variant="outlined" className="mainpost">
@@ -235,7 +243,7 @@ const SinglePost = memo(({ post, mainUser }) => {
                     sx={{
                       opacity: hasRated ? 1 : 0.9,
                       '& .MuiRating-iconFilled': {
-                        color: hasRated ? '#f9a825' : '#ffb400',
+                        color: hasRated ? '#f9a825' : '#E67E22',
                       },
                       '&:hover': {
                         opacity: hasRated ? 1 : 1,
@@ -253,15 +261,30 @@ const SinglePost = memo(({ post, mainUser }) => {
                 Report
               </Button>
             </ButtonGroup>
+
             {dialogOpen && (
-                          <Repport
-                            dialogOpen={dialogOpen}
-                            setDialogOpen={setDialogOpen}
-                            userId={mainUser.id_u}
-                            postId={post.id_p}
-                          />
-                        )}
-            
+              <Repport
+                dialogOpen={dialogOpen}
+                setDialogOpen={setDialogOpen}
+                userId={mainUser.id_u}
+                postId={post.id_p}
+                onReportSuccess={() => {
+                  setReportAlert({
+                    open: true,
+                    message: "Post reported successfully!",
+                    severity: "success"
+                  });
+                }}
+                onReportError={(error) => {
+                  setReportAlert({
+                    open: true,
+                    message: error || "Failed to report the post.",
+                    severity: "error"
+                  });
+                }}
+              />
+            )}
+
             <div className={`commentchoi ${showComments ? 'open' : ''}`}>
               <Divider />
               <CommentInput userId={mainUser.id_u} postId={post.id_p} />
@@ -270,6 +293,32 @@ const SinglePost = memo(({ post, mainUser }) => {
           </CardContent>
         </React.Fragment>
       </Card>
+      <Snackbar
+        open={reportAlert.open}
+        autoHideDuration={3000}
+        onClose={handleReportAlertClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        sx={{
+          position: 'fixed',
+          bottom: '20px',
+          zIndex: 9999
+        }}
+      >
+        <Alert
+          onClose={handleReportAlertClose}
+          severity={reportAlert.severity}
+          variant="filled"
+          sx={{
+            width: '100%',
+            bgcolor: reportAlert.severity === 'success' ? '#4caf50' : '#f44336',
+            '& .MuiAlert-icon': {
+              color: 'white'
+            }
+          }}
+        >
+          {reportAlert.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 });

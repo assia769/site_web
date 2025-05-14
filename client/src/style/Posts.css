@@ -62,7 +62,7 @@
 }
 
 .button_g .MuiButton-root:hover {
-    background-color: rgba(178, 34, 34, 0.9) !important;
+    background-color: #E5E5E5 !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
 }
@@ -101,13 +101,13 @@
 }
 
 .grad_result .star {
-    font-size: 1.8rem !important;
-    color: #FFD700;
+    font-size: 2rem !important;
+    color: #E67E22;
 }
 
 .grad_result h6 {
-    font-size: 1.2rem;
-    color: #FFD700;
+    font-size: 1.4rem;
+    color: #E67E22;
     margin: 0;
     font-weight: 500;
 }
@@ -164,8 +164,8 @@
 
 /* Active Button State */
 .button_g .MuiButton-root.Mui-selected {
-    background-color: rgba(178, 34, 34, 0.8) !important;
-    color: white !important;
+    background-color: white !important;
+    color: black !important;
 }
 
 /* Button Text */

@@ -56,7 +56,7 @@ export default function Header(){
                 {/* navigation */}
                 <Grid  sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)',maxWidth:700,minWidth:200}}>
                     <Box sx={{maxWidth:700,minWidth:200}}>
-                    <BottomNavigation sx={{ width: 600 ,backgroundColor: 'transparent','& .MuiBottomNavigationAction-root':{'&.Mui-selected': {color: '#2B2B2B'}}}} value={value} onChange={handleChangenavigation}>
+                    <BottomNavigation sx={{ width: 600 ,backgroundColor: 'transparent','& .MuiBottomNavigationAction-root':{'&.Mui-selected': {color: '#E67E22'}}}} value={value} onChange={handleChangenavigation}>
                         
                         <BottomNavigationAction
                             label="Profile"
@@ -80,7 +80,6 @@ export default function Header(){
                             component={Link}
                             to={MainUser ? `/user/${MainUser.id_u}/profile` : "/"}
                         />
-                        
                         <BottomNavigationAction 
                             label="Home" 
                             value="Home" 
@@ -106,11 +105,11 @@ export default function Header(){
                 <Grid  sx={{ display:'flex' , alignItems:'center' ,justifyContent:'center',marginLeft:'10px',position:'absolute',left:'70%'}}>
                     <Paper
                         component="form"
-                        sx={{ p: '1px 1px', display: 'flex', alignItems: 'center',width: '300px', maxWidth: '250px', minWidth: '10px', backgroundColor:'#2B2B2B', color:'#E6E6E6',height:'40px','&:hover':{boxShadow:10}}}
+                        sx={{ p: '1px 1px', display: 'flex', alignItems: 'center',width: '300px', maxWidth: '250px', minWidth: '10px', backgroundColor:'#E5E5E5', color:'black',height:'40px','&:hover':{boxShadow:10}}}
                         onSubmit={(e)=>{e.preventDefault();handleSearch();}}
                     >
                         <InputBase
-                            sx={{fontSize:'14px', ml: 2, flex: 1 , width:'1200px' ,color:'#E6E6E6', height:'100%'}}
+                            sx={{fontSize:'14px', ml: 2, flex: 1 , width:'1200px' ,color:'black', height:'100%'}}
                             placeholder="Ach ghantaybo lyoum ?"
                             inputProps={{ 'aria-label': 'Ach ghantaybo lyoum ?'}}
                             value={searchTerm}
@@ -127,12 +126,12 @@ export default function Header(){
                                 value={searchType}
                                 label="choie du recherche"
                                 onChange={handleChange}
-                                sx={{height: '40px',fontSize:'14px',backgroundColor:'#2B2B2B',color: '#E6E6E6',transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
+                                sx={{height: '40px',fontSize:'14px',backgroundColor:'#E5E5E5',color: '#333333',transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
                                         '& .MuiSelect-icon': {  
-                                            color: '#E6E6E6'
+                                            color: '#E5E5E5'
                                         },
                                         '& .MuiOutlinedInput-notchedOutline': {
-                                            borderColor: '#8B0000', // Border color
+                                            borderColor: '#E5E5E5', // Border color
                                             transition: 'border-color 0.3s ease',
                                         },
                                         '&:hover .MuiOutlinedInput-notchedOutline': {
@@ -148,17 +147,18 @@ export default function Header(){
                                 MenuProps={{
                                     PaperProps: {
                                         sx: {
-                                            backgroundColor: '#2B2B2B',
-                                            color: '#E6E6E6',
+                                            backgroundColor: '#E5E5E5',
+                                            color: '#333333',
                                             '& .MuiMenuItem-root': {
                                                 '&:hover': {
-                                                    backgroundColor: '#3B3B3B',
+                                                    backgroundColor: 'gray',
+                                                    color: '#FFFFFF'
                                                 },
                                                 '&.Mui-selected': {
-                                                    backgroundColor: '#8B0000',
+                                                    backgroundColor: 'gray',
                                                     color: '#FFFFFF',
                                                     '&:hover': {
-                                                        backgroundColor: '#7B0000',
+                                                        backgroundColor: 'gray',
                                                     }
                                                 }
                                             }

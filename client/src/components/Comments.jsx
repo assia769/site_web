@@ -12,18 +12,25 @@ import { useContext } from 'react';
 
 export function getCommentUser(comment, users) {
     // Find the user for the specific comment
-    const user = users.find(user => user.id_u === comment.id_u);
+    const user = users?.find(user => user.id_u === comment.id_u);
     
     // Return the full user object or null if not found
     return user || null;
 }
 
-
 export default function Comments({post}) {
-    let comments = useContext(CommentsContext);
-    let users = useContext(UsersContext);
+    const commentsContext = useContext(CommentsContext);
+    const users = useContext(UsersContext);
 
-    const filteredComments = comments.filter((comment) => {return comment.id_p === post.id_p});
+    // Ensure we have valid data before proceeding
+    if (!commentsContext || !commentsContext.comments || !Array.isArray(commentsContext.comments)) {
+        return null;
+    }
+
+    // Filter comments for this post and sort by date (newest first)
+    const filteredComments = commentsContext.comments
+        .filter((comment) => comment.id_p === post.id_p)
+        .sort((a, b) => new Date(b.date_c) - new Date(a.date_c));
 
     return (
         <>
@@ -40,16 +47,16 @@ export default function Comments({post}) {
                                             <CardHeader
                                                 avatar={
                                                     <Avatar className='propic3'>
-                                                        {commentUser.profilpic_u ? (
+                                                        {commentUser?.profilpic_u ? (
                                                             <Avatar
                                                             className="propic3"
-                                                            src={`http://localhost:8000/images/${commentUser.profilpic_u}`} // Use the profile picture URL
+                                                            src={`http://localhost:8000/images/${commentUser.profilpic_u}`}
                                                             />
                                                         ) : (
                                                             <Avatar
                                                             className="propic3"
                                                             >
-                                                            {commentUser.username_u[0]} {/* Fallback to user's initial */}
+                                                            {commentUser?.username_u?.[0] || '?'}
                                                             </Avatar>
                                                         )}
                                                     </Avatar>

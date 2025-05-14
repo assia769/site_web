@@ -1,3 +1,6 @@
 import { createContext } from "react";
 
-export let CommentsContext = createContext();
+export const CommentsContext = createContext({
+    comments: [],
+    setComments: () => {}
+});

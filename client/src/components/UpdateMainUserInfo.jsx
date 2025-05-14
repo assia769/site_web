@@ -8,7 +8,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import { Divider, Snackbar, Alert } from '@mui/material';
+import { Divider} from '@mui/material';
 import axios from 'axios'; // Make sure axios is installed
 
 // Set CSRF token for all axios requests
@@ -89,8 +89,6 @@ export default function UpdateMainUserInfo({ setOpen, mainUser, open }) {
                 // Close the dialog after successful update
                 setTimeout(() => {
                     handleClose();
-                    // You might want to refresh user data in the parent component
-                    // This could be done by passing a callback function as a prop
                     window.location.reload(); // Optional: refresh the page
                 }, 1500);
             }
@@ -104,7 +102,10 @@ export default function UpdateMainUserInfo({ setOpen, mainUser, open }) {
         }
     };
 
-    const handleAlertClose = () => {
+    const handleAlertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
         setAlert({ ...alert, open: false });
     };
 
@@ -149,12 +150,6 @@ export default function UpdateMainUserInfo({ setOpen, mainUser, open }) {
                     </DialogActions>
                 </Box>
             </Dialog>
-
-            <Snackbar open={alert.open} autoHideDuration={6000} onClose={handleAlertClose}>
-                <Alert onClose={handleAlertClose} severity={alert.severity}>
-                    {alert.message}
-                </Alert>
-            </Snackbar>
         </>
     );
 }

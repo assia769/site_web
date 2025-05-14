@@ -8,17 +8,28 @@ import Login from '../components/Auth/Login';
 import SignUp from '../components/Auth/SignUp';
 import AboutUs from '../pages/AboutUs';
 import Dashboard from '../pages/Dashboard';
+import Verification from '../components/Auth/Verification';
 
 // Authentication check component
 const ProtectedRoute = () => {
   const isAuthenticated = sessionStorage.getItem('user') !== null;
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+  const isVerified = sessionStorage.getItem('verified') === 'true';
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+  
+  if (!isVerified) {
+    return <Navigate to="/verification" />;
+  }
+  
+  return <Outlet />;
 };
 
 // Wrapper component to get and pass userId parameter to BodyApp
 const BodyAppWrapper = () => {
   const { userId } = useParams();
-  return <BodyApp id={userId } />;
+  return <BodyApp id={userId} />;
 };
 
 export const router = createBrowserRouter([
@@ -30,6 +41,10 @@ export const router = createBrowserRouter([
   {
     path: '/signup',
     element: <SignUp />
+  },
+  {
+    path: '/verification',
+    element: <Verification />
   },
   {
     path: '/aboutUs',

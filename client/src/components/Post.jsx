@@ -24,45 +24,47 @@ import InfiniteScroll from "react-infinite-scroll-component"
 import LoadingAnimation from "./LoadingAnimation"
 import { SearchContext } from "./context/SearchContext"
 import { MainUserContext } from "./context/MainUserContext"
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import Repport from "./Repport"
 
 // Button group style - defined once outside components
-const buttonGroupStyle = {
-  width: "100%",
-  display: "flex",
-  marginTop: "3%",
+const buttonGroupStyle = { 
+  width: '100%', 
+  display: 'flex',
+  marginTop: '3%',
   // Remove the blue border between buttons
-  "& .MuiButtonGroup-grouped:not(:last-of-type)": {
-    borderColor: "#2B2B2B", // Match with button background color
+  '& .MuiButtonGroup-grouped:not(:last-of-type)': {
+    borderColor: '#2B2B2B', // Match with button background color
   },
   // Remove focus outline and border for all states
-  "& .MuiButtonGroup-grouped:focus, & .MuiButtonGroup-grouped:active, & .MuiButtonGroup-grouped:focus-visible": {
-    outline: "none !important",
-    border: "none !important",
-    boxShadow: "none !important",
-    borderRight: "1px solid #2B2B2B !important", // Match with button background
+  '& .MuiButtonGroup-grouped:focus, & .MuiButtonGroup-grouped:active, & .MuiButtonGroup-grouped:focus-visible': {
+    outline: 'none !important',
+    border: 'none !important',
+    boxShadow: 'none !important',
+    borderRight: '1px solid #2B2B2B !important', // Match with button background
   },
   // Style for all buttons in the group
-  "& .MuiButton-root": {
+  '& .MuiButton-root': {
     flex: 1,
-    justifyContent: "center",
-    color: "#E6E6E6",
-    background: "transparent",
-    transition: "0.3s",
-    outline: "none",
-    border: "none",
-    marginBottom: "-3%",
-    "&:hover": {
-      color: "#2B2B2B",
-      backgroundColor: "#B22222",
-      boxShadow: 10,
+    justifyContent: 'center',
+    color: '#E67E22',
+    background:'transparent',
+    transition: '0.3s',
+    outline: 'none',
+    border: 'none',
+    marginBottom:'-3%',
+    '&:hover': {
+      color: '#333333',
+      backgroundColor: "#E67E22",
+      boxShadow: 10
     },
-    "&:focus, &:active, &:focus-visible": {
-      outline: "none !important",
-      boxShadow: "none !important",
-    },
-  },
-}
+    '&:focus, &:active, &:focus-visible': {
+      outline: 'none !important',
+      boxShadow: 'none !important',
+    }
+  }
+};
 
 // Memoized SinglePost component for each post
 const SinglePost = memo(({ post, postUser }) => {
@@ -74,6 +76,8 @@ const SinglePost = memo(({ post, postUser }) => {
 
   const [csrfToken, setCsrfToken] = useState("")
   const [isSaved, setIsSaved] = useState(false)
+  const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
+  const [reportAlert, setReportAlert] = useState({ open: false, message: "", severity: "success" });
   const [userRating, setUserRating] = useState(0)
   const [hasRated, setHasRated] = useState(false)
   const [postData, setPostData] = useState(post)
@@ -162,17 +166,27 @@ const SinglePost = memo(({ post, postUser }) => {
 
       if (response.ok) {
         setIsSaved(true)
-        // Optional: Use a more subtle notification instead of alert
-        // toast.success('Post saved successfully!');
-        console.log("Post saved successfully!")
+        setAlert({
+          open: true,
+          message: "Post saved successfully!",
+          severity: "success",
+        });
       } else {
-        const errorData = await response.json()
-        console.error("Save error:", errorData)
-        alert(errorData.error || "Failed to save the post.")
+         const errorData = await response.json();
+        console.error("Save error:", errorData);
+        setAlert({
+          open: true,
+          message: errorData.error || "Failed to save the post.",
+          severity: "error",
+        });
       }
     } catch (err) {
       console.error("Save exception:", err)
-      alert("An error occurred. Please try again.")
+      setAlert({
+        open: true,
+        message: "An error occurred. Please try again.",
+        severity: "error",
+      });
     }
   }
 
@@ -228,10 +242,24 @@ const SinglePost = memo(({ post, postUser }) => {
     return `http://localhost:8000/uploads/${imagePath}`
   }
 
+  
   const averageRating = postData.rating_count > 0 
     ? (postData.total_rating / postData.rating_count).toFixed(1) 
     : "0.0"
 
+  const handleAlertClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setAlert(prev => ({ ...prev, open: false }));
+  };
+
+  const handleReportAlertClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setReportAlert(prev => ({ ...prev, open: false }));
+  };
 
   return (
     <Box key={post.id_p}>
@@ -323,6 +351,7 @@ const SinglePost = memo(({ post, postUser }) => {
                 <BookmarkIcon color={isSaved ? "primary" : "inherit"} />
                 {isSaved ? "Saved" : "Save"}
               </Button>
+              
               <Button onClick={() => setDialogOpen(true)}>
                 <ReportIcon />
                 Report
@@ -335,6 +364,20 @@ const SinglePost = memo(({ post, postUser }) => {
                 setDialogOpen={setDialogOpen}
                 userId={mainUser.id_u}
                 postId={post.id_p}
+                onReportSuccess={() => {
+                  setReportAlert({
+                    open: true,
+                    message: "Post reported successfully!",
+                    severity: "success"
+                  });
+                }}
+                onReportError={(error) => {
+                  setReportAlert({
+                    open: true,
+                    message: error || "Failed to report the post.",
+                    severity: "error"
+                  });
+                }}
               />
             )}
 
@@ -346,6 +389,63 @@ const SinglePost = memo(({ post, postUser }) => {
           </CardContent>
         </React.Fragment>
       </Card>
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={3000}
+        onClose={handleAlertClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        sx={{
+          '& .MuiSnackbar-root': {
+            position: 'fixed',
+            bottom: '20px',
+            zIndex: 9999
+          }
+        }}
+      >
+        <Alert
+          onClose={handleAlertClose}
+          severity={alert.severity}
+          variant="filled"
+          sx={{
+            width: '100%',
+            bgcolor: alert.severity === 'success' ? '#4caf50' : '#f44336',
+            '& .MuiAlert-icon': {
+              color: 'white'
+            }
+          }}
+        >
+          {alert.message}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={reportAlert.open}
+        autoHideDuration={3000}
+        onClose={handleReportAlertClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        sx={{
+          '& .MuiSnackbar-root': {
+            position: 'fixed',
+            bottom: '20px',
+            zIndex: 9999
+          }
+        }}
+      >
+        <Alert
+          onClose={handleReportAlertClose}
+          severity={reportAlert.severity}
+          variant="filled"
+          sx={{
+            width: '100%',
+            bgcolor: reportAlert.severity === 'success' ? '#4caf50' : '#f44336',
+            '& .MuiAlert-icon': {
+              color: 'white'
+            }
+          }}
+        >
+          {reportAlert.message}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 })

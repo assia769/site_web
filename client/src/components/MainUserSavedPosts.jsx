@@ -46,15 +46,15 @@ const buttonGroupStyle = {
   '& .MuiButton-root': {
     flex: 1,
     justifyContent: 'center',
-    color: '#E6E6E6',
+    color: '#E67E22',
     background:'transparent',
     transition: '0.3s',
     outline: 'none',
     border: 'none',
     marginBottom:'-3%',
     '&:hover': {
-      color: '#2B2B2B',
-      backgroundColor: "#B22222",
+      color: '#333333',
+      backgroundColor: "#E67E22",
       boxShadow: 10
     },
     '&:focus, &:active, &:focus-visible': {
@@ -238,7 +238,7 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
                     sx={{
                       opacity: hasRated ? 1 : 0.9,
                       '& .MuiRating-iconFilled': {
-                        color: hasRated ? '#f9a825' : '#ffb400',
+                        color: hasRated ? '#E67E22' : '#ffb400',
                       },
                       '&:hover': {
                         opacity: hasRated ? 1 : 1,

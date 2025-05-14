@@ -1,5 +1,5 @@
 .header{
-    background-color: #8B0000; /* Full viewport height */
+    background-color: white; /* Full viewport height */
     flex-direction: column;
     transition: transform 0.3s ease-in-out;
     animation: dropDown 0.5s ease-out forwards;
