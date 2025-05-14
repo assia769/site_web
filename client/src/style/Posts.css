@@ -256,3 +256,16 @@
 .comment_input_comp:nth-child(3) { animation-delay: 0.3s; }
 .comment_input_comp:nth-child(4) { animation-delay: 0.4s; }
 .comment_input_comp:nth-child(5) { animation-delay: 0.5s; } 
+
+/* about us link style */
+.aboutus {
+    color: #333333 !important;
+    font-size: 16px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.aboutus:hover {
+    color:  black!important;
+    text-decoration: underline;
+}

@@ -119,7 +119,7 @@ export default function Header(){
                     {/* select  */}
                     <Box sx={{ minWidth: 100 }}>
                         <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label" sx={{color:'gray',fontSize:'14px',height:'40px','&.Mui-focused': {color: 'gray',}}}>Choix</InputLabel>
+                            <InputLabel id="demo-simple-select-label" sx={{color:'gray',fontSize:'14px',height:'40px','&.Mui-focused': {color: 'gray',}}} />
                             <Select
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"

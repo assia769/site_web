@@ -320,10 +320,15 @@ const SinglePost = memo(({ post, postUser }) => {
                     value={userRating || 0} 
                     onChange={handleRatingChange} 
                     precision={1} 
+                    size="medium" // Use medium size
                     sx={{
                       opacity: hasRated ? 1 : 0.9,
                       '& .MuiRating-iconFilled': {
                         color: hasRated ? '#f9a825' : '#ffb400',
+                      },
+                      // More moderate size increase for the stars
+                      '& .MuiSvgIcon-root': {
+                        fontSize: '1.5rem', // Medium icon size increase
                       },
                       '&:hover': {
                         opacity: hasRated ? 1 : 1,

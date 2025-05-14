@@ -8,9 +8,18 @@ import Typography from '@mui/material/Typography';
 import { useContext } from 'react';
 import { MainUserContext } from './context/MainUserContext';
 import '../style/Posts.css';
+import { PostsContext } from './context/PostsContext';
+import { SaveContext } from './context/SaveContext';
+import Link from '@mui/material/Link';
+
 
 export default function ProfileDetailes() {
     const MainUser = useContext(MainUserContext);
+    const posts = useContext(PostsContext);
+    const saves = useContext(SaveContext);
+
+    const nbrOfPosts = posts ? posts.filter(post => post.id_u === MainUser.id_u).length : 0;
+    const nbrOfSaves = saves ? saves.filter(save => save.id_u === MainUser.id_u).length : 0;
 
     return (
         <div className="profile-section">
@@ -37,10 +46,24 @@ export default function ProfileDetailes() {
                             <Typography gutterBottom className="proname">
                                 {MainUser && MainUser.username_u ? MainUser.username_u : 'Loading...'}
                             </Typography>
+
+                            <div style={{ marginTop: '15px', textAlign: 'center' }}>
+                                <Typography gutterBottom style={{ fontSize: '16px',color:'#333333'}}>
+                                    Number of Posts: {nbrOfPosts}
+                                </Typography>
+                                <Typography gutterBottom style={{ fontSize: '16px',color:'#333333'}}>
+                                    Number of Saves: {nbrOfSaves}
+                                </Typography>
+                            </div>
                         </CardContent>
                     </React.Fragment>
                 </Card>
             </Box>
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <Link href="/Aboutus" className="aboutus" underline="hover">
+                    About us
+                </Link>
+            </div>
         </div>
     );
 }

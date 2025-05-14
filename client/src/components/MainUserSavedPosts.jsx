@@ -25,6 +25,7 @@ import { MainUserContext } from './context/MainUserContext';
 import { SearchContext } from './context/SearchContext';
 import InfiniteScroll from 'react-infinite-scroll-component'; 
 import Repport from './Repport';
+import tajinkhawi from '../assets/tajin_khawi_without_background.png'
 
 // Button group style - defined once outside components
 const buttonGroupStyle = { 
@@ -230,21 +231,26 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
               <Button className='rating'>
                 <Stack spacing={1} >
                 <Rating 
-                    name={`rating-${post.id_p}`}  
-                    value={userRating || 0} 
-                    onChange={handleRatingChange} 
-                    precision={1} 
-                    disabled={hasRated}
-                    sx={{
-                      opacity: hasRated ? 1 : 0.9,
-                      '& .MuiRating-iconFilled': {
-                        color: hasRated ? '#E67E22' : '#ffb400',
-                      },
-                      '&:hover': {
-                        opacity: hasRated ? 1 : 1,
-                      }
-                    }}
-                  />
+                  name={`rating-${post.id_p}`}  
+                  value={userRating || 0} 
+                  onChange={handleRatingChange} 
+                  precision={1} 
+                  size="medium" // Use medium size
+                  sx={{
+                    opacity: hasRated ? 1 : 0.9,
+                    '& .MuiRating-iconFilled': {
+                      color: hasRated ? '#f9a825' : '#ffb400',
+                    },
+                    // More moderate size increase for the stars
+                    '& .MuiSvgIcon-root': {
+                      fontSize: '1.5rem', // Medium icon size increase
+                    },
+                    '&:hover': {
+                      opacity: hasRated ? 1 : 1,
+                    }
+                  }}
+                  disabled={hasRated}
+                />
                 </Stack>
               </Button>
               <Button onClick={handleToggleComments}>
@@ -417,18 +423,26 @@ function Post() {
   // Show a message when user has no saved posts
   if (Array.isArray(userSaves) && userSaves.length === 0) {
     return (
-      <Box className="no-saved-posts" sx={{ 
-        textAlign: 'center', 
-        padding: '3rem 1rem',
-        color: 'white'
-      }}>
-        <Typography variant="h5" component="h2">
-          You haven't saved any posts yet
-        </Typography>
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          When you save posts, they will appear here
-        </Typography>
-      </Box>
+      <div style={{ 
+            textAlign: 'center', 
+            marginTop: '10px', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
+            <img
+              src={tajinkhawi} 
+              alt="No posts found"
+              style={{ 
+                width: '300px', 
+                height: 'auto', 
+                animation: 'bounce 2s infinite', 
+                marginBottom: '20px' 
+              }} 
+            />
+            <p style={{ color: 'black', marginTop: '-20px' }}>Mazal kantsnaw chhiwat dyalk</p>
+          </div>
     );
   }
 
