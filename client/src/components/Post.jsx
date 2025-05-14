@@ -305,7 +305,7 @@ const SinglePost = memo(({ post, postUser }) => {
                 <Typography variant="h4" component="h1" className="post_title">
                   {post.title_p}
                 </Typography>
-                <Typography component="div">{isTextExpanded ? post.discription_p : truncatedText}</Typography>
+                <Typography component="div" style={{ whiteSpace: "pre-wrap" }}>{isTextExpanded ? post.discription_p : truncatedText}</Typography>
                 <Button variant="text" onClick={handleToggleText} sx={{ color: "gray" }}>
                   {isTextExpanded ? "See Less" : "See More"}
                 </Button>

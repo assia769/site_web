@@ -9,6 +9,7 @@ import SignUp from '../components/Auth/SignUp';
 import AboutUs from '../pages/AboutUs';
 import Dashboard from '../pages/Dashboard';
 import Verification from '../components/Auth/Verification';
+import Errorpage from '../components/Errorpage';
 
 // Authentication check component
 const ProtectedRoute = () => {
@@ -101,7 +102,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '*',
-        element: <p>404: not found</p>
+        element: <Errorpage />
       }
     ]
   },

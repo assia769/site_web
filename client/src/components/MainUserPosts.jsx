@@ -218,7 +218,7 @@ const SinglePost = memo(({ post, mainUser }) => {
                 <Typography variant="h4" component="h1" className="post_title">
                   {post.title_p}
                 </Typography>
-                <Typography component="div">
+                <Typography component="div" style={{ whiteSpace: "pre-wrap" }}>
                   {isTextExpanded ? post.discription_p : truncatedText}
                 </Typography>
                 <Button 

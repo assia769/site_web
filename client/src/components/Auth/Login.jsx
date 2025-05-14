@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { login } from '../../services/api';
+import zlig from '../../assets/zlig_with_color.jpeg'
 
 
 const AuthContainer = styled.div`
@@ -12,6 +13,11 @@ const AuthContainer = styled.div`
   align-items: center;
   height: 100vh;
   width: 100vw;
+  background-image: url('${zlig}'); /* Replace with the actual path to your image */
+  background-size: cover; /* Ensure the image covers the entire background */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-attachment: fixed; /* Keep the background fixed during scrolling */
   background-color: #8b0000;
   margin: 0;
   padding: 0;
