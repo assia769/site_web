@@ -119,6 +119,15 @@ const handleDeletePost = async (reportId) => {
   }
 };
   
+const getImageUrl = (imagePath) => {
+    if (!imagePath) return null
+    // If the path already includes http, assume it's a full URL
+    if (imagePath.startsWith("http")) return imagePath
+    // Otherwise, prepend the backend URL
+    return `http://localhost:8000/uploads/${imagePath}`
+  }
+
+
 const handleIgnoreReport = async (reportId) => {
   if (!reportId) {
     setErrorMessage('ID de signalement manquant');
@@ -254,6 +263,12 @@ const handleIgnoreReport = async (reportId) => {
               )}
               
               <div className="modal-body">
+                <img
+                  loading="lazy"
+                  src={getImageUrl(selectedReport.post_pic) || "/placeholder.svg"}
+                  alt={selectedReport.post_pic || "Recipe image"}
+                  className="post_img"
+                />
                 <p><strong>ID du signalement:</strong> {selectedReport.report_id}</p>
                 <p><strong>Titre:</strong> {selectedReport.post_title}</p>
                 <p><strong>Description du post:</strong> {selectedReport.post_description || 'Non disponible'}</p>

@@ -340,7 +340,6 @@ const response = await instance.post('/api/api/non-auth/admins', newAdmin, {
                 <TableRow sx={{ bgcolor: '#f8f9fa' }}>
                   <TableCell>Email</TableCell>
                   <TableCell>Rôle</TableCell>
-                  <TableCell>Statut</TableCell>
                   <TableCell align="center">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -358,13 +357,7 @@ const response = await instance.post('/api/api/non-auth/admins', newAdmin, {
                         }}
                       />
                     </TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={admin.is_active ? 'Actif' : 'Inactif'}
-                        size="small"
-                        color={admin.is_active ? 'success' : 'error'}
-                      />
-                    </TableCell>
+                    
                     <TableCell align="center">
                       <IconButton
                         onClick={() => {

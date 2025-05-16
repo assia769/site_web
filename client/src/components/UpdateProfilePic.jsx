@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import '../style/Body.css';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -8,16 +8,12 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Divider, Snackbar, Alert } from '@mui/material';
-import axios from 'axios'; // Make sure axios is installed
-
-// Set CSRF token for all axios requests
-axios.defaults.withCredentials = true; // Important for cookies/session
+import axiosInstance from '../utils/axios'; // Import our configured instance
 
 export default function UpdateProfilePic({ setOpen, mainUser, open }) {
     const [userPic, setUserPic] = useState(null);
     const [imageName, setImageName] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
-    const [csrfToken, setCsrfToken] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const [alert, setAlert] = useState({
@@ -25,25 +21,6 @@ export default function UpdateProfilePic({ setOpen, mainUser, open }) {
         message: "",
         severity: "success"
     });
-    
-    useEffect(() => {
-            fetch('http://localhost:8000/sanctum/csrf-cookie', {
-                method: 'GET',
-                credentials: 'include' // Important for cookies
-            })
-            .then(response => {
-                // Get the CSRF token from cookies
-                const token = document.cookie
-                    .split('; ')
-                    .find(row => row.startsWith('XSRF-TOKEN='))
-                    ?.split('=')[1];
-                    
-                if (token) {
-                    setCsrfToken(decodeURIComponent(token));
-                }
-            })
-            .catch(error => console.error('Error fetching CSRF token:', error));
-        }, []);
 
     const handleClose = () => {
         setOpen(false);
@@ -86,17 +63,14 @@ export default function UpdateProfilePic({ setOpen, mainUser, open }) {
             formData.append('profilpic_u', userPic);
             formData.append('_method', 'PUT'); // For Laravel method spoofing
 
-            // IMPORTANT FIX: Use post with FormData for file uploads
-            console.log('hi');
-            const response = await axios.post(
-                `http://localhost:8000/api/userspic/${mainUser.id_u}`, 
+            // Use POST with _method: PUT for proper file upload handling
+            const response = await axiosInstance.post(
+                `/api/userspic/${mainUser.id_u}`, 
                 formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data', // IMPORTANT: This is needed for file uploads
-                        'Accept': 'application/json',
-                        'X-XSRF-TOKEN': csrfToken,
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'Content-Type': 'multipart/form-data',
+                        'X-HTTP-Method-Override': 'PUT' // Additional header to indicate PUT request
                     }
                 }
             );
@@ -107,11 +81,9 @@ export default function UpdateProfilePic({ setOpen, mainUser, open }) {
                     message: "Profile Picture updated successfully!",
                     severity: "success"
                 });
-                // Close the dialog after successful update
                 setTimeout(() => {
                     handleClose();
-                    // You might want to refresh user data in the parent component
-                    window.location.reload(); // Optional: refresh the page
+                    window.location.reload();
                 }, 1500);
             }
         } catch (error) {
@@ -180,7 +152,7 @@ export default function UpdateProfilePic({ setOpen, mainUser, open }) {
                                     }}
                                     className="img_addpost"
                                 >
-                                    {imageName || 'Chi tswira lhad lwasfa ?'}
+                                    {imageName || 'Zid tswirtk'}
                                 </Box>
                             </label>
                         </Box>

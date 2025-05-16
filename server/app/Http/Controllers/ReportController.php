@@ -84,6 +84,7 @@ public function getReportedPosts()
             'report.date_r as reported_at',
             'post.title_p as post_title',
             'post.discription_p as post_description',
+            'post.pic_p as post_pic',
             'users.username_u as reported_by'
         )
         ->orderBy('report.date_r', 'desc')

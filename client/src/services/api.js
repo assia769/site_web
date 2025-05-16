@@ -7,11 +7,21 @@ const instance = axios.create({
   withCredentials: true,
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
-    'Content-Type': 'application/json',
     'Accept': 'application/json'
   }
 });
 
+// Add request interceptor to handle CSRF token
+instance.interceptors.request.use(async (config) => {
+  // Don't modify headers for file uploads
+  if (config.data instanceof FormData) {
+    return config;
+  }
+
+  // For other requests, set JSON content type
+  config.headers['Content-Type'] = 'application/json';
+  return config;
+});
 
 export const getCsrfToken = async () => {
   try {
@@ -218,4 +228,30 @@ export const deleteUser = async (id) => {
     throw error;
   }
 };
+
+// Add profile picture update function
+export const updateProfilePicture = async (userId, file) => {
+  try {
+    // Get CSRF token first
+    await getCsrfToken();
+    const token = getXsrfToken();
+
+    const formData = new FormData();
+    formData.append('profilpic_u', file);
+
+    const response = await instance.put(`/api/userspic/${userId}`, formData, {
+      headers: {
+        'X-XSRF-TOKEN': token,
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error updating profile picture:', error);
+    throw error;
+  }
+};
+
 export { instance };

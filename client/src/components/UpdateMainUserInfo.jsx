@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import '../style/Body.css';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -9,36 +9,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { Divider} from '@mui/material';
-import axios from 'axios'; // Make sure axios is installed
-
-// Set CSRF token for all axios requests
-axios.defaults.withCredentials = true; // Important for cookies/session
+import axiosInstance from '../utils/axios'; // Import our configured instance
 
 export default function UpdateMainUserInfo({ setOpen, mainUser, open }) {
     const [userData, setUserData] = useState({
         username: mainUser ? mainUser.username_u : "",
         birthday: mainUser ? mainUser.birthday_u : ""
     });
-    const [csrfToken, setCsrfToken] = useState('');
-    
-    useEffect(() => {
-            fetch('http://localhost:8000/sanctum/csrf-cookie', {
-                method: 'GET',
-                credentials: 'include' // Important for cookies
-            })
-            .then(response => {
-                // Get the CSRF token from cookies
-                const token = document.cookie
-                    .split('; ')
-                    .find(row => row.startsWith('XSRF-TOKEN='))
-                    ?.split('=')[1];
-                    
-                if (token) {
-                    setCsrfToken(decodeURIComponent(token));
-                }
-            })
-            .catch(error => console.error('Error fetching CSRF token:', error));
-        }, []);
     
     const [alert, setAlert] = useState({
         open: false,
@@ -58,26 +35,15 @@ export default function UpdateMainUserInfo({ setOpen, mainUser, open }) {
         });
     };
 
-    // First, get CSRF token from Laravel
-
     const handleUpdate = async () => {
         try {
             if (!mainUser || !mainUser.id_u) {
                 throw new Error("User ID not found");
             }
 
-            // For Laravel API, we need to use the right format
-            const response = await axios.put(`http://localhost:8000/api/users/${mainUser.id_u}`, {
+            const response = await axiosInstance.put(`/api/users/${mainUser.id_u}`, {
                 username_u: userData.username,
-                birthday_u: userData.birthday,
-                _method: 'PUT' // Sometimes needed for Laravel APIs
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-XSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                birthday_u: userData.birthday
             });
 
             if (response.status === 200) {
