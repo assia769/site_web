@@ -12,6 +12,7 @@ const instance = axios.create({
   }
 });
 
+
 export const getCsrfToken = async () => {
   try {
     const response = await axios.get('http://localhost:8000/sanctum/csrf-cookie', {
@@ -25,7 +26,7 @@ export const getCsrfToken = async () => {
 };
 
 // Fonction utilitaire pour récupérer le token CSRF du cookie
-const getXsrfToken = () => {
+export const getXsrfToken = () => {
   const token = document.cookie
     .split('; ')
     .find(row => row.startsWith('XSRF-TOKEN='))
@@ -182,3 +183,39 @@ export const fetchUserActivity = async () => {
     throw error;
   }
 };
+// Récupérer tous les utilisateurs
+export const fetchUsers = async () => {
+  try {
+    const response = await fetch('/api/users');
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des utilisateurs');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+};
+
+// Supprimer un utilisateur
+export const deleteUser = async (id) => {
+  try {
+    await getCsrfToken();
+    const token = getXsrfToken();
+    const authToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+
+    const response = await instance.delete(`/api/users/${id}`, {
+      headers: {
+        'X-XSRF-TOKEN': token,
+        'Authorization': `Bearer ${authToken}`
+      },
+      withCredentials: true
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
+};
+export { instance };

@@ -18,8 +18,11 @@ export default function ProfileDetailes() {
     const posts = useContext(PostsContext);
     const saves = useContext(SaveContext);
 
-    const nbrOfPosts = posts ? posts.filter(post => post.id_u === MainUser.id_u).length : 0;
-    const nbrOfSaves = saves ? saves.filter(save => save.id_u === MainUser.id_u).length : 0;
+    const postsArray = Array.isArray(posts) ? posts : [];
+    const savesArray = Array.isArray(saves) ? saves : [];
+
+    const nbrOfPosts = posts ? postsArray.filter(post => post.id_u === MainUser.id_u).length : 0;
+    const nbrOfSaves = saves ? savesArray.filter(save => save.id_u === MainUser.id_u).length : 0;
 
     return (
         <div className="profile-section">

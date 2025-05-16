@@ -87,6 +87,7 @@ export default function UpdateProfilePic({ setOpen, mainUser, open }) {
             formData.append('_method', 'PUT'); // For Laravel method spoofing
 
             // IMPORTANT FIX: Use post with FormData for file uploads
+            console.log('hi');
             const response = await axios.post(
                 `http://localhost:8000/api/userspic/${mainUser.id_u}`, 
                 formData,

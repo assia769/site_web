@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from 'react-router-dom';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import XIcon from '@mui/icons-material/X';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 
 // Animations
 const fadeIn = keyframes`
@@ -40,7 +44,7 @@ const PageContainer = styled.div`
 `;
 
 const Header = styled.header`
-  height: 100vh;
+  height: 130vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -59,6 +63,7 @@ const BackgroundCircles = styled.div`
   z-index: 0;
   opacity: 0.5;
 `;
+
 
 const Circle = styled.div`
   position: absolute;
@@ -98,12 +103,14 @@ const Circle = styled.div`
   }
 `;
 
+
 const LogoSection = styled.div`
   margin-bottom: 0px;
-  margin-top: 40px;
+  margin-top: 20px;
   animation: ${float} 6s ease-in-out infinite;
   z-index: 2;
 `;
+
 
 const Logo = styled.img`
   width: 180px;
@@ -111,10 +118,11 @@ const Logo = styled.img`
   filter: drop-shadow(0 0 20px rgba(255, 165, 0, 0.5));
 `;
 
+
 const MainTitle = styled.h1`
   font-size: 5rem;
   font-family: serif;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
    margin-top: 0px;
   background: linear-gradient(90deg, #ffffff, #ffd700, #ffffff);
   background-size: 200% auto;
@@ -140,6 +148,7 @@ const SubTitle = styled.p`
   z-index: 2;
 `;
 
+
 const ScrollDownButton = styled.button`
   background: none;
   border: 2px solid white;
@@ -150,7 +159,7 @@ const ScrollDownButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 30px;
-  margin-bottom: 90px;
+  margin-bottom: 80px;
   animation: ${pulse} 2s infinite;
   z-index: 2;
   
@@ -160,8 +169,9 @@ const ScrollDownButton = styled.button`
   }
 `;
 
+
 const Section = styled.section`
-  padding: 100px 50px;
+  padding: 50px 50px;
   position: relative;
   animation: ${fadeIn} 1s ease-out forwards;
   opacity: 0;
@@ -170,6 +180,7 @@ const Section = styled.section`
     opacity: 1;
   }
 `;
+
 
 const SectionTitle = styled.h2`
   font-size: 3rem;
@@ -193,6 +204,7 @@ const SectionTitle = styled.h2`
   }
 `;
 
+
 const TeamContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -202,16 +214,18 @@ const TeamContainer = styled.div`
   margin: 0 auto;
 `;
 
+
 const TeamMember = styled.div`
   width: 300px;
   perspective: 1000px;
   margin-bottom: 30px;
 `;
 
+
 const MemberCard = styled.div`
   position: relative;
   width: 100%;
-  height: 400px;
+  height: 500px;
   cursor: pointer;
   transform-style: preserve-3d;
   transition: transform 0.8s ease;
@@ -219,6 +233,7 @@ const MemberCard = styled.div`
   border-radius: 15px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
 `;
+
 
 const CardFront = styled.div`
   position: absolute;
@@ -253,7 +268,7 @@ const CardBack = styled.div`
 const MemberImage = styled.div`
   width: 150px;
   height: 150px;
-  border-radius: 20%;
+  border-radius: 100%;
   overflow: hidden;
   border: 5px solid rgba(255, 255, 255, 0.2);
   margin-bottom: 20px;
@@ -571,11 +586,11 @@ const AboutUs = () => {
     
     {
       id: 2,
-      "name": "Ayman Igri",
+      "name": "Aymen Igri",
       "role": "Software Engineering Student",
       "image": "/ayman.jpg",
       "linkedin": "https://www.linkedin.com/in/aymen-igri-8b6167304",
-      "bio": "Third-year CS student at ENSA Khouribga, passionate about coding and impactful innovation.",
+      "bio": "Third-year SE student at ENSA Khouribga, passionate about coding and impactful innovation.",
       "details": "Ayman is a motivated software engineering student who enjoys exploring how technology can address everyday challenges. He is constantly growing his knowledge through hands-on projects and is driven by a desire to create tools that make a difference. With a strong base in software development, Ayman strives to build solutions that are useful, reliable, and user-focused."
     },
     {
@@ -586,14 +601,7 @@ image: "/assia.jpg",
 "linkedin": "https://www.linkedin.com/in/assia-houbbadi-6726b0272/",
 bio: "Third-year computer science student, passionate about technology and developing innovative solutions.",
 details: "Assia Houbbadi is a future software engineer driven by a genuine passion for computer science. Curious and motivated, she enjoys taking on technical challenges and contributing to impactful, real-world projects. With strong development skills and a constant desire to learn, she aspires to use technology in the service of people and innovation."},
-    {
-      id: 4,
-      name: "Kamal Omari",
-      role: "Professeur en informatique",
-      image: "/ayman.jpg",
-      bio: "Expert en génie informatique avec un doctorat en sciences informatiques",
-      details: "Kamal Omari est un professeur passionné par l'enseignement et la recherche en informatique. Titulaire d'un doctorat, il guide et inspire ses étudiants à travers des projets innovants et des défis technologiques. Sa rigueur académique et son approche collaborative permettent aux étudiants de développer des compétences solides pour réussir dans le domaine du génie informatique."
-},];
+    ];
   
   // Features data
   const features = [
@@ -717,7 +725,7 @@ details: "Assia Houbbadi is a future software engineer driven by a genuine passi
         </BackgroundCircles>
         
         <LogoSection>
-          <Logo src="/logo.png" alt="Restaurant Logo" />
+          <Logo src="/logo.png" alt="yalah_ntaybo Logo" />
         </LogoSection>
         
         <MainTitle>Our Story</MainTitle>
@@ -849,16 +857,16 @@ details: "Assia Houbbadi is a future software engineer driven by a genuine passi
         
         <SocialLinks>
           <SocialIcon href="#" aria-label="Facebook">
-            f
+            <FacebookIcon />
           </SocialIcon>
           <SocialIcon href="#" aria-label="Instagram">
-            ig
+            <InstagramIcon />
           </SocialIcon>
           <SocialIcon href="#" aria-label="Twitter">
-            t
+            <XIcon />
           </SocialIcon>
           <SocialIcon href="#" aria-label="YouTube">
-            yt
+            <YouTubeIcon />
           </SocialIcon>
         </SocialLinks>
         

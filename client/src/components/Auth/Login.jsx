@@ -230,7 +230,7 @@ const Login = () => {
         if (result.role === 'admin') {
           navigate('/dashboard');
         } else {
-          navigate(`/user/${result.user.id_u}`); 
+          navigate(`/user/${result.user.id_u}/home`); 
         }
       } else {
         setError(result.message || 'Erreur de connexion');

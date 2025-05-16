@@ -25,7 +25,134 @@ import { MainUserContext } from './context/MainUserContext';
 import { SearchContext } from './context/SearchContext';
 import InfiniteScroll from 'react-infinite-scroll-component'; 
 import Repport from './Repport';
-import tajinkhawi from '../assets/tajin_khawi_without_background.png'
+import tajinkhawi from '../assets/tajin_khawi_without_background.png';
+import { keyframes } from '@emotion/react';
+import { styled } from '@mui/material/styles';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import AddIcon from '@mui/icons-material/Add';
+
+// Animations
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const pulse = keyframes`
+  0% { transform: scale(1); box-shadow: 0 5px 15px rgba(230, 126, 34, 0.2); }
+  50% { transform: scale(1.05); box-shadow: 0 10px 25px rgba(230, 126, 34, 0.4); }
+  100% { transform: scale(1); box-shadow: 0 5px 15px rgba(230, 126, 34, 0.2); }
+`;
+
+const shimmer = keyframes`
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+`;
+
+// Styled components for empty state
+const EmptyStateContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: theme.spacing(6),
+  margin: theme.spacing(4, 0),
+  borderRadius: '16px',
+  overflow: 'hidden',
+  position: 'relative',
+  animation: `${fadeIn} 0.8s ease-out forwards`,
+  transition: 'transform 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+  },
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '5px',
+    backgroundSize: '200% 100%',
+    animation: `${shimmer} 2s infinite linear`,
+  }
+}));
+
+const TajineImage = styled('img')(({ theme }) => ({
+  width: '250px',
+  height: 'auto',
+  marginBottom: theme.spacing(4),
+  animation: `${float} 6s ease-in-out infinite`,
+  filter: 'drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3))',
+  transition: 'transform 0.3s ease',
+  '&:hover': {
+    transform: 'scale(1.05) rotate(5deg)',
+  }
+}));
+
+const EmptyStateTitle = styled(Typography)(({ theme }) => ({
+  fontSize: '2rem',
+  fontWeight: 'bold',
+  color: '#E67E22',
+  marginBottom: theme.spacing(2),
+  textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+  animation: `${fadeIn} 0.8s ease-out forwards`,
+  animationDelay: '0.2s',
+  opacity: 0,
+}));
+
+const EmptyStateSubtitle = styled(Typography)(({ theme }) => ({
+  fontSize: '1.2rem',
+  color: '#aaa',
+  marginBottom: theme.spacing(4),
+  maxWidth: '80%',
+  textAlign: 'center',
+  animation: `${fadeIn} 0.8s ease-out forwards`,
+  animationDelay: '0.4s',
+  opacity: 0,
+}));
+
+const CreateButton = styled(Button)(() => ({
+  backgroundColor: '#E67E22',
+  color: 'white',
+  padding: '12px 24px',
+  borderRadius: '30px',
+  fontSize: '1rem',
+  fontWeight: 'bold',
+  boxShadow: '0 5px 15px rgba(230, 126, 34, 0.3)',
+  transition: 'all 0.3s ease',
+  animation: `${pulse} 2s infinite, ${fadeIn} 0.8s ease-out forwards`,
+  animationDelay: '0.6s',
+  opacity: 0,
+  '&:hover': {
+    backgroundColor: '#d35400',
+    transform: 'translateY(-3px)',
+    boxShadow: '0 8px 20px rgba(230, 126, 34, 0.5)',
+  },
+  '&:active': {
+    transform: 'translateY(1px)',
+    boxShadow: '0 2px 10px rgba(230, 126, 34, 0.3)',
+  }
+}));
+
+const IconContainer = styled(Box)(({ theme }) => ({
+  backgroundColor: '#E67E22',
+  borderRadius: '50%',
+  width: '60px',
+  height: '60px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginBottom: theme.spacing(3),
+  boxShadow: '0 5px 15px rgba(230, 126, 34, 0.3)',
+  animation: `${fadeIn} 0.8s ease-out forwards`,
+  animationDelay: '0.1s',
+  opacity: 0,
+}));
 
 // Button group style - defined once outside components
 const buttonGroupStyle = { 
@@ -200,7 +327,6 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
                   subheader={post.date_p}
                   className='userinfo'
                   sx={{color:'white'}}
-                  mainUser={mainUser}
                 />
               </Grid>
               <Grid size={2} className='grad_result'>
@@ -208,7 +334,16 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
                 <h6>{averageRating}/5</h6>
               </Grid>
               <Grid size={5}>
-                <img loading='lazy' src={getImageUrl(post.pic_p)} alt={post.title_p || "Recipe image"} className='post_img' />
+                <img 
+                  loading='lazy' 
+                  src={getImageUrl(post.pic_p) || "/placeholder.svg"} 
+                  alt={post.title_p || "Recipe image"} 
+                  className='post_img'
+                  onError={(e) => {
+                    e.target.onerror = null; // Prevent infinite loop
+                    e.target.src = "/placeholder.svg";
+                  }} 
+                />
               </Grid>
               <Grid size={7} className="title_p">
                 <Typography variant="h4" component="h1" className="post_title">
@@ -264,12 +399,12 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
             </ButtonGroup>
             
             {dialogOpen && (
-                          <Repport
-                            dialogOpen={dialogOpen}
-                            setDialogOpen={setDialogOpen}
-                            userId={mainUser.id_u}
-                            postId={post.id_p}
-                          />
+              <Repport
+                dialogOpen={dialogOpen}
+                setDialogOpen={setDialogOpen}
+                userId={mainUser.id_u}
+                postId={post.id_p}
+              />
             )}
             
             <div className={`commentchoi ${showComments ? 'open' : ''}`}>
@@ -420,29 +555,18 @@ function Post() {
     return <div className="loadersave"></div>;
   }
 
-  // Show a message when user has no saved posts
+  // Show a styled empty state when user has no saved posts
   if (Array.isArray(userSaves) && userSaves.length === 0) {
     return (
-      <div style={{ 
-            textAlign: 'center', 
-            marginTop: '10px', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center', 
-            justifyContent: 'center' 
-          }}>
-            <img
-              src={tajinkhawi} 
-              alt="No posts found"
-              style={{ 
-                width: '300px', 
-                height: 'auto', 
-                animation: 'bounce 2s infinite', 
-                marginBottom: '20px' 
-              }} 
-            />
-            <p style={{ color: 'black', marginTop: '-20px' }}>Mazal kantsnaw chhiwat dyalk</p>
-          </div>
+      <EmptyStateContainer>
+        
+        <TajineImage src={tajinkhawi} alt="Empty tajine" />
+        
+        <EmptyStateTitle variant="h4">
+          Wach mazal mal9iti hta chi wasfa zwina? 9lb 3la li bghiti f bare du recherche.
+        </EmptyStateTitle>
+        
+      </EmptyStateContainer>
     );
   }
 

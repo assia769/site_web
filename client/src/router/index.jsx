@@ -1,5 +1,5 @@
-// router/index.jsx - FIXED VERSION
-import { createBrowserRouter, Navigate, Outlet, useParams } from 'react-router-dom';
+import { createBrowserRouter, Navigate, Outlet, useParams, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react'; // Import useEffect from react, not react-router-dom
 import Body from '../components/Body';
 import Profile from '../components/Profile';
 import SavedPosts from '../components/SavedPosts';
@@ -11,7 +11,7 @@ import Dashboard from '../pages/Dashboard';
 import Verification from '../components/Auth/Verification';
 import Errorpage from '../components/Errorpage';
 
-// Authentication check component
+// Enhanced Authentication check component with URL parameter validation
 const ProtectedRoute = () => {
   const isAuthenticated = sessionStorage.getItem('user') !== null;
   const isVerified = sessionStorage.getItem('verified') === 'true';
@@ -27,10 +27,27 @@ const ProtectedRoute = () => {
   return <Outlet />;
 };
 
-// Wrapper component to get and pass userId parameter to BodyApp
+// Enhanced wrapper component that validates the userId parameter
 const BodyAppWrapper = () => {
   const { userId } = useParams();
-  return <BodyApp id={userId} />;
+  const navigate = useNavigate();
+  const currentUser = JSON.parse(sessionStorage.getItem('user') || '{}');
+  
+  useEffect(() => {
+    // Check if the URL userId matches the logged-in user's ID
+    if (!currentUser.id_u || userId !== currentUser.id_u.toString()) {
+      // If userId is manipulated, clear session and redirect to login
+      sessionStorage.removeItem('user');
+      sessionStorage.removeItem('role');
+      sessionStorage.removeItem('verified');
+      navigate('/login');
+    }
+  }, [userId, currentUser.id_u, navigate]);
+
+  // Only render BodyApp if userId is valid
+  return currentUser.id_u && userId === currentUser.id_u.toString() 
+    ? <BodyApp id={userId} /> 
+    : null;
 };
 
 export const router = createBrowserRouter([
@@ -73,6 +90,10 @@ export const router = createBrowserRouter([
             element: <Body />
           },
           {
+            path: 'home',
+            element: <Body />
+          },
+          {
             path: 'profile',
             element: <Profile />
           },
@@ -80,18 +101,6 @@ export const router = createBrowserRouter([
             path: 'myposts',
             element: <SavedPosts />
           },
-        ]
-      },
-      
-      // Add separate route for home that doesn't use userId as parameter
-      {
-        path: 'home',
-        element: <BodyAppWrapper />,
-        children: [
-          {
-            path: '',
-            element: <Body />
-          }
         ]
       },
       

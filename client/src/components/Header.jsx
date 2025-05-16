@@ -7,13 +7,13 @@ import Avatar from '@mui/material/Avatar';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Box from '@mui/material/Box'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useContext } from 'react';
 import { MainUserContext } from './context/MainUserContext';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
@@ -23,8 +23,28 @@ export default function Header(){
 
     let MainUser = useContext(MainUserContext);
     const { searchTerm, setSearchTerm, searchType, setSearchType } = useContext(SearchContext);
+    const location = useLocation(); // Get current location
+    
+    // Initialize value state based on current path
+    const [value, setValue] = useState(() => {
+        const path = location.pathname;
+        if (path.includes('/profile')) return 'Profile';
+        if (path.includes('/home') || path === `/user/${MainUser?.id_u}`) return 'Home';
+        if (path.includes('/myposts')) return 'saved posts';
+        return 'Home'; // Default value
+    });
 
-    const [value, setValue] = useState('recents');
+    // Update value when location changes
+    useEffect(() => {
+        const path = location.pathname;
+        if (path.includes('/profile')) {
+            setValue('Profile');
+        } else if (path.includes('/home') || path === `/user/${MainUser?.id_u}`) {
+            setValue('Home');
+        } else if (path.includes('/myposts')) {
+            setValue('saved posts');
+        }
+    }, [location.pathname, MainUser?.id_u]);
 
     const handleChangenavigation = (event, newValue) => {
         setValue(newValue);
@@ -36,7 +56,6 @@ export default function Header(){
 
     const handleSearchInputChange = (event)=>{
         setSearchTerm(event.target.value);
-
     }
 
     const handleSearch = () => {
@@ -44,13 +63,12 @@ export default function Header(){
         console.log(`Searching for: ${searchTerm} in ${searchType}`);
     };
 
-
     return (
         <div className="header" >
             <Grid container spacing={2} sx={{boxShadow:10 ,height: '50px', alignItems:'center'}}>
                 <Grid xs={12} sm={12} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' ,height:'100%',paddingX: '20px'}}>
                     <Grid xs={2} >
-                    <img src={logo} alt="aji ntaybo" style={{ width: '65px', height: 'auto'}} />
+                    <img src={logo || "/placeholder.svg"} alt="aji ntaybo" style={{ width: '65px', height: 'auto'}} />
                     </Grid>
                 
                 {/* navigation */}
@@ -85,7 +103,7 @@ export default function Header(){
                             value="Home" 
                             icon={<HomeRoundedIcon />} 
                             component={Link}
-                            to="/home"
+                            to={MainUser ? `/user/${MainUser.id_u}/home` : "/"}
                         />
                         
                         <BottomNavigationAction

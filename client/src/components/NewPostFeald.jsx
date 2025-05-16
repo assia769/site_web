@@ -29,7 +29,7 @@ export default function NewPostFeald() {
         fetch('http://localhost:8000/sanctum/csrf-cookie', {
             credentials: 'include',
         })
-            .then((response) => {
+            .then(() => {
                 const token = document.cookie
                     .split('; ')
                     .find((row) => row.startsWith('XSRF-TOKEN='))

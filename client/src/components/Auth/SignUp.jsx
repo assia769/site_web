@@ -21,6 +21,7 @@ const AuthContainer = styled.div`
   box-sizing: border-box;
 `;
 
+
 const FormWrapper = styled.div`
   background-color: #550000;
   padding: 30px;
@@ -31,10 +32,8 @@ const FormWrapper = styled.div`
   max-width: 100%;
   border: 2px solid black;
   box-sizing: border-box;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  margin-right: 150px; /* Add margin to the right side */
+  transition: all 0.8s ease-in-out;
 `;
 
 const LogoContainer = styled.div`
@@ -142,6 +141,53 @@ const ErrorMessage = styled.div`
   margin-bottom: 15px;
   font-size: 14px;
 `;
+
+const FrameContainer = styled.div`
+  width: 40%;
+  height: 90vh;
+  margin: 30px auto 30px 120px; /* Changed margin to position on the left */
+  border: 5px solid rgb(67, 28, 2);
+  border-radius: 15px;
+  box-shadow: 0px 4px 10px rgba(10, 9, 9, 0.5);
+  overflow: hidden;
+  transition: all 0.8s ease-in-out;
+`;
+
+const ImageContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  animation: slide 15s infinite;
+  
+ @keyframes slide {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-100%);
+  }
+  40% {
+    transform: translateX(-200%);
+  }
+  60% {
+    transform: translateX(-300%);
+  }
+  80% {
+    transform: translateX(-400%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+`;
+
+const Image = styled.img`
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+`;
+
+
 
 // Configuration axios globale
 axios.defaults.baseURL = 'http://localhost:8000';
@@ -261,6 +307,16 @@ const SignUp = () => {
 
   return (
     <AuthContainer>
+      <FrameContainer>
+        <ImageContainer>
+   <Image src="/meal1.jpg" alt="Meal 1" />
+          <Image src="/meal2.jpg" alt="Meal 2" />
+          <Image src="/meal3.jpg" alt="Meal 3" />
+          <Image src="/meal4.jpg" alt="Meal 4" />
+          <Image src="/meal5.jpg" alt="Meal 5" />
+          <Image src="/meal6.jpg" alt="Meal 6" />
+        </ImageContainer>
+      </FrameContainer>
       <FormWrapper>
         <LogoContainer>
           <img src="/logo.png" alt="Logo" style={{ width: "120px" }} />

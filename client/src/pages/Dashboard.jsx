@@ -1,172 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import Header from '../components/Header';
-// import StatsOverview from '../components/StatsOverview';
-// import RecipesChart from '../components/RecipesChart';
-// import RatingsChart from '../components/RatingsChart';
-// import PopularRecipesTable from '../components/PopularRecipesTable';
-// import UserActivityChart from '../components/UserActivityChart';
-// import { 
-//   fetchStats, 
-//   fetchPostsPerMonth, 
-//   fetchRatingsDistribution, 
-//   fetchPopularRecipes, 
-//   fetchUserActivity,
-//   logout 
-// } from '../services/api';
-
-// const Dashboard = () => {
-//   const navigate = useNavigate();
-//   const [stats, setStats] = useState({
-//     posts: 0,
-//     likes: 0,
-//     saves: 0,
-//     reports: 0
-//   });
-  
-//   const [postsData, setPostsData] = useState([]);
-//   const [ratingsData, setRatingsData] = useState([]);
-//   const [popularRecipes, setPopularRecipes] = useState([]);
-//   const [userActivity, setUserActivity] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [activeChart, setActiveChart] = useState('posts'); // 'posts', 'ratings', 'popular', 'users'
-
-//   useEffect(() => {
-//     const fetchDashboardData = async () => {
-//       try {
-//         // Utiliser les fonctions d'API pour récupérer les données
-//         const statsData = await fetchStats();
-//         setStats(statsData);
-        
-//         const postsData = await fetchPostsPerMonth();
-//         setPostsData(postsData);
-        
-//         const ratingsData = await fetchRatingsDistribution();
-//         setRatingsData(ratingsData);
-        
-//         const recipesData = await fetchPopularRecipes();
-//         setPopularRecipes(recipesData);
-        
-//         const usersData = await fetchUserActivity();
-//         setUserActivity(usersData);
-        
-//         setLoading(false);
-//       } catch (error) {
-//         console.error("Erreur lors du chargement des données du dashboard:", error);
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchDashboardData();
-//   }, []);
-
-//   // Fonction de déconnexion améliorée
-//   const handleLogout = async () => {
-//     try {
-//       const result = await logout();
-//       if (result.success) {
-//         // Rediriger vers la page de connexion
-//         navigate('/login');
-//       }
-//     } catch (error) {
-//       console.log("Erreur lors de la déconnexion:", error);
-//       // Forcer la redirection même en cas d'erreur
-//       // (déconnexion côté client seulement)
-//       //navigate('/login');
-//     }
-//   };
-
-//   const renderActiveChart = () => {
-//     switch (activeChart) {
-//       case 'posts':
-//         return <RecipesChart postsData={postsData} />;
-//       case 'ratings':
-//         return <RatingsChart ratingsData={ratingsData} />;
-//       case 'popular':
-//         return <PopularRecipesTable recipes={popularRecipes} />;
-//       case 'users':
-//         return <UserActivityChart userData={userActivity} />;
-//       default:
-//         return <RecipesChart postsData={postsData} />;
-//     }
-//   };
-
-//   if (loading) {
-//     return <div className="loading">Chargement des données...</div>;
-//   }
-
-//   return (
-//     <div className="dashboard">
-//       <Header />
-      
-//       <div className="container">
-        
-//         <StatsOverview stats={stats} />
-        
-//         <div className="chart-buttons">
-//           <button
-//             className="btn-green"
-//             onClick={() => setActiveChart('posts')}
-//           >
-//             Recettes par mois
-//           </button>
-//           <button
-//             className="btn-green"
-//             onClick={() => setActiveChart('ratings')}
-//           >
-//             Distribution des notes
-//           </button>
-//           <button
-//             className="btn-green"
-//             onClick={() => setActiveChart('popular')}
-//           >
-//             Recettes populaires
-//           </button>
-//           <button
-//             className="btn-green"
-//             onClick={() => setActiveChart('users')}
-//           >
-//             Activité des utilisateurs
-//           </button>
-//         </div>
-        
-//         <div className="chart-container">
-//           {renderActiveChart()}
-//         </div>
-//          {/* Bouton de déconnexion à la fin du dashboard */}
-//          <div className="logout-container" style={{ 
-//           display: 'flex', 
-//           justifyContent: 'center', 
-//           marginTop: '30px',
-//           marginBottom: '20px'
-//         }}>
-//           <button 
-//             className="btn-logout"
-//             onClick={handleLogout}
-//             style={{
-//               backgroundColor: '#8b0000',
-//               color: 'white',
-//               padding: '10px 20px',
-//               border: 'none',
-//               borderRadius: '5px',
-//               cursor: 'pointer',
-//               fontFamily: 'serif',
-//               fontSize: '16px',
-//               boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)'
-//             }}
-//           >
-//             Déconnexion
-//           </button>
-        
-       
-          
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Dashboard;
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header2';
@@ -174,6 +5,11 @@ import RecipesChart from '../components/RecipesChart';
 import RatingsChart from '../components/RatingsChart';
 import PopularRecipesTable from '../components/PopularRecipesTable';
 import UserActivityChart from '../components/UserActivityChart';
+import ReportedPosts from '../components/ReportedPosts';
+import UserManagement from '../components/UserManagement';
+import AdminManagement from '../components/AdminManagement';
+
+
 import { 
   fetchStats, 
   fetchPostsPerMonth, 
@@ -251,6 +87,12 @@ const LogOutIcon = () => (
     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
     <polyline points="16 17 21 12 16 7"></polyline>
     <line x1="21" y1="12" x2="9" y2="12"></line>
+  </svg>
+);
+const UserIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+    <circle cx="12" cy="7" r="4"></circle>
   </svg>
 );
 
@@ -373,25 +215,12 @@ const Dashboard = () => {
     cursor: 'pointer',
   };
 
-  // Fonction supprimée car remplacée par du code en ligne
-  // const getIconForChart = (chartType) => {
-  //   switch (chartType) {
-  //     case 'posts':
-  //       return <Calendar size={20} />;
-  //     case 'ratings':
-  //       return <Star size={20} />;
-  //     case 'popular':
-  //       return <Award size={20} />;
-  //     case 'users':
-  //       return <Users size={20} />;
-  //     default:
-  //       return null;
-  //   }
-  // }; 
+   
 
   return (
     <div className="dashboard" style={{ 
-      backgroundColor: '#8b0000',
+      // backgroundColor: '#8b0000',
+     backgroundImage: "url('/WhatsApp Image 2025-05-12 à 23.54.07_e871f018.jpg')",
       minHeight: '100vh',
       fontFamily: 'serif'
     }}>
@@ -622,6 +451,119 @@ const Dashboard = () => {
           </div>
           {renderActiveChart()}
         </div>
+  
+        
+{/* Section de gestion des utilisateurs */}
+<div className="user-management-container" style={{ 
+  backgroundColor: 'white',
+  borderRadius: '12px',
+  padding: '25px',
+  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
+  marginBottom: '30px'
+}}>
+  <div style={{ 
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '20px'
+  }}>
+    <div style={{ 
+      backgroundColor: '#8b0000',
+      width: '40px',
+      height: '40px',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: '12px'
+    }}>
+      <UserIcon />
+    </div>
+    <h2 style={{ 
+      margin: '0',
+      fontSize: '20px',
+      fontWeight: 'bold',
+      color: '#333'
+    }}>
+      Gestion des Utilisateurs
+    </h2>
+  </div>
+  <UserManagement />
+</div>
+{/* Section de gestion des administrateurs */}
+<div className="admin-management-container" style={{ 
+  backgroundColor: 'white',
+  borderRadius: '12px',
+  padding: '25px',
+  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
+  marginBottom: '30px'
+}}>
+  <div style={{ 
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '20px'
+  }}>
+    <div style={{ 
+      backgroundColor: '#8b0000',
+      width: '40px',
+      height: '40px',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: '12px'
+    }}>
+      <UserIcon />
+    </div>
+    <h2 style={{ 
+      margin: '0',
+      fontSize: '20px',
+      fontWeight: 'bold',
+      color: '#333'
+    }}>
+      Gestion des Admins
+    </h2>
+  </div>
+  <AdminManagement />
+</div>
+
+{/* Section des posts signalés */}
+<div className="reported-posts-container" style={{ 
+  backgroundColor: 'white',
+  borderRadius: '12px',
+  padding: '25px',
+  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
+  marginBottom: '30px'
+}}>
+  <div style={{ 
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '20px'
+  }}>
+    <div style={{ 
+      backgroundColor: '#8b0000',
+      width: '40px',
+      height: '40px',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: '12px'
+    }}>
+      <FlagIcon />
+    </div>
+    <h2 style={{ 
+      margin: '0',
+      fontSize: '20px',
+      fontWeight: 'bold',
+      color: '#333'
+    }}>
+      Posts Signalés
+    </h2>
+  </div>
+  <ReportedPosts />
+</div>
+ 
+        
         
         {/* Bouton de déconnexion amélioré */}
         <div className="logout-container" style={{ 
