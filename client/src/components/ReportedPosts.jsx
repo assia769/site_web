@@ -20,6 +20,7 @@ const ReportedPosts = () => {
   const [showModal, setShowModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   useEffect(() => {
     fetchReports();
@@ -262,19 +263,42 @@ const handleIgnoreReport = async (reportId) => {
                 </div>
               )}
               
-              <div className="modal-body">
+              <div className="modal-body details-card">
                 <img
                   loading="lazy"
                   src={getImageUrl(selectedReport.post_pic) || "/placeholder.svg"}
                   alt={selectedReport.post_pic || "Recipe image"}
-                  className="post_img"
+                  className="post_img details-img"
                 />
-                <p><strong>ID du signalement:</strong> {selectedReport.report_id}</p>
-                <p><strong>Titre:</strong> {selectedReport.post_title}</p>
-                <p><strong>Description du post:</strong> {selectedReport.post_description || 'Non disponible'}</p>
-                <p><strong>Raison du signalement:</strong> {selectedReport.description || 'Non spécifiée'}</p>
-                <p><strong>Signalé par:</strong> {selectedReport.reported_by || 'Anonyme'}</p>
-                <p><strong>Date:</strong> {new Date(selectedReport.reported_at).toLocaleString()}</p>
+                <div className="details-grid">
+                  <div><span className="details-label">ID du signalement:</span> <span>{selectedReport.report_id}</span></div>
+                  <div><span className="details-label">Titre:</span> <span>{selectedReport.post_title}</span></div>
+                  <div>
+                    <span className="details-label">Description du post:</span>
+                    <span>
+                      {selectedReport.post_description && selectedReport.post_description.length > 200 && !showFullDescription ? (
+                        <>
+                          {selectedReport.post_description.slice(0, 200)}...
+                          <button className="see-more-btn" onClick={() => setShowFullDescription(true)}>
+                            Voir plus
+                          </button>
+                        </>
+                      ) : selectedReport.post_description && selectedReport.post_description.length > 200 && showFullDescription ? (
+                        <div className="scrollable-description">
+                          {selectedReport.post_description}
+                          <button className="see-more-btn" onClick={() => setShowFullDescription(false)}>
+                            Voir moins
+                          </button>
+                        </div>
+                      ) : (
+                        selectedReport.post_description || 'Non disponible'
+                      )}
+                    </span>
+                  </div>
+                  <div><span className="details-label">Raison du signalement:</span> <span>{selectedReport.description || 'Non spécifiée'}</span></div>
+                  <div><span className="details-label">Signalé par:</span> <span>{selectedReport.reported_by || 'Anonyme'}</span></div>
+                  <div><span className="details-label">Date:</span> <span>{new Date(selectedReport.reported_at).toLocaleString()}</span></div>
+                </div>
               </div>
               <div className="modal-footer">
                 <button className="secondary-btn" onClick={handleCloseModal}>
@@ -486,6 +510,68 @@ const handleIgnoreReport = async (reportId) => {
           padding: 8px 16px;
           border-radius: 4px;
           cursor: pointer;
+        }
+        
+        .details-card {
+          background: #fafbfc;
+          border-radius: 8px;
+          padding: 20px;
+          margin-top: 10px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .details-img {
+          width: 220px;
+          max-width: 220px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+          margin-bottom: 18px;
+          display: block;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        .details-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 12px;
+          flex: 1;
+        }
+        .details-label {
+          font-weight: 600;
+          color: #8b0000;
+          margin-right: 8px;
+        }
+        .see-more-btn {
+          background: none;
+          border: none;
+          color: #8b0000;
+          font-weight: 600;
+          cursor: pointer;
+          margin-left: 8px;
+          padding: 0;
+        }
+        .scrollable-description {
+          max-height: 180px;
+          overflow-y: auto;
+          background: #fff;
+          border: 1px solid #eee;
+          border-radius: 6px;
+          padding: 8px 12px;
+          margin: 8px 0;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+        .scrollable-description::-webkit-scrollbar {
+          width: 8px;
+        }
+        .scrollable-description::-webkit-scrollbar-thumb {
+          background: #e0e0e0;
+          border-radius: 4px;
+        }
+        @media (max-width: 700px) {
+          .details-img {
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 18px;
+          }
         }
       `}</style>
     </div>
