@@ -10,12 +10,11 @@ import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import GradeIcon from '@mui/icons-material/Grade';
 import CardHeader from '@mui/material/CardHeader';
-import { Button, Divider } from '@mui/material';
+import { Button, Divider ,Snackbar,Alert } from '@mui/material';
 import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
-import ReportIcon from '@mui/icons-material/Report';
 import Comment from './comments';
 import CommentInput from './CommentInput';
 import { UsersContext } from './context/UsersContext';
@@ -28,8 +27,9 @@ import Repport from './Repport';
 import tajinkhawi from '../assets/tajin_khawi_without_background.png';
 import { keyframes } from '@emotion/react';
 import { styled } from '@mui/material/styles';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import AddIcon from '@mui/icons-material/Add';
+import ReportIcon from '@mui/icons-material/Report';
+
+
 
 // Animations
 const float = keyframes`
@@ -197,6 +197,8 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
   const [isTextExpanded, setIsTextExpanded] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [reportAlert, setReportAlert] = useState({ open: false, message: "", severity: "success" });
+  
   
   const truncatedText = post.discription_p.slice(0, 200) + '...';
 
@@ -244,6 +246,13 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
         }
       })()
     }, [mainUser.id_u, post.id_p])
+
+    const handleReportAlertClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setReportAlert(prev => ({ ...prev, open: false }));
+  };
 
   const handleRatingChange = async (event, newValue) => {
       if (!csrfToken || hasRated) return
@@ -393,17 +402,32 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
                 Comment
               </Button>
               <Button onClick={() => setDialogOpen(true)}>
-                <ReportIcon/> 
-                Report
+                              <ReportIcon/> 
+                              Report
               </Button>
             </ButtonGroup>
             
+
             {dialogOpen && (
               <Repport
                 dialogOpen={dialogOpen}
                 setDialogOpen={setDialogOpen}
                 userId={mainUser.id_u}
                 postId={post.id_p}
+                onReportSuccess={() => {
+                  setReportAlert({
+                    open: true,
+                    message: "Post reported successfully!",
+                    severity: "success"
+                  });
+                }}
+                onReportError={(error) => {
+                  setReportAlert({
+                    open: true,
+                    message: error || "Failed to report the post.",
+                    severity: "error"
+                  });
+                }}
               />
             )}
             
@@ -415,6 +439,32 @@ const SinglePost = memo(({ post, postUser, mainUser }) => {
           </CardContent>
         </React.Fragment>
       </Card>
+      <Snackbar
+              open={reportAlert.open}
+              autoHideDuration={3000}
+              onClose={handleReportAlertClose}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              sx={{
+                position: 'fixed',
+                bottom: '20px',
+                zIndex: 9999
+              }}
+            >
+              <Alert
+                onClose={handleReportAlertClose}
+                severity={reportAlert.severity}
+                variant="filled"
+                sx={{
+                  width: '100%',
+                  bgcolor: reportAlert.severity === 'success' ? '#4caf50' : '#f44336',
+                  '& .MuiAlert-icon': {
+                    color: 'white'
+                  }
+                }}
+              >
+                {reportAlert.message}
+              </Alert>
+      </Snackbar>
     </Box>
   );
 });

@@ -52,13 +52,13 @@ Route::prefix('api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     
     // Routes du dashboard (sans middleware CORS explicite)
-    Route::get('/dashboard/stats', [DashboardController::class, 'getStats']);
-    Route::get('/dashboard/posts-per-month', [DashboardController::class, 'getPostsPerMonth']);
-    Route::get('/dashboard/ratings-distribution', [DashboardController::class, 'getRatingsDistribution']);
-    Route::get('/dashboard/popular-recipes', [DashboardController::class, 'getPopularRecipes']);
-    Route::get('/dashboard/user-activity', [DashboardController::class, 'getUserActivity']);
+Route::get('/dashboard/stats', [DashboardController::class, 'getStats']);
+Route::get('/dashboard/posts-per-month', [DashboardController::class, 'getPostsPerMonth']);
+Route::get('/dashboard/ratings-distribution', [DashboardController::class, 'getRatingsDistribution']);
+Route::get('/dashboard/popular-recipes', [DashboardController::class, 'getPopularRecipes']);
+Route::get('/dashboard/user-activity', [DashboardController::class, 'getUserActivity']);
     
-    // Route de test API directe
+     // Route de test API directe
     Route::get('/direct-test', function() {
         return response()->json(['message' => 'Direct test route working!']);
     });

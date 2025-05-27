@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
+import { register } from '../../services/api'; // Utiliser votre service API
 import zlig from '../../assets/zlig_with_color.jpeg'
 
 const AuthContainer = styled.div`
@@ -10,17 +10,16 @@ const AuthContainer = styled.div`
   align-items: center;
   height: 100vh;
   width: 100vw;
-  background-image: url('${zlig}'); /* Replace with the actual path to your image */
-  background-size: cover; /* Ensure the image covers the entire background */
-  background-position: center; /* Center the image */
-  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-image: url('${zlig}');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   background-attachment: fixed;
   background-color: #8b0000;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 `;
-
 
 const FormWrapper = styled.div`
   background-color: #550000;
@@ -32,7 +31,7 @@ const FormWrapper = styled.div`
   max-width: 100%;
   border: 2px solid black;
   box-sizing: border-box;
-  margin-right: 150px; /* Add margin to the right side */
+  margin-right: 150px;
   transition: all 0.8s ease-in-out;
 `;
 
@@ -145,7 +144,7 @@ const ErrorMessage = styled.div`
 const FrameContainer = styled.div`
   width: 40%;
   height: 90vh;
-  margin: 30px auto 30px 120px; /* Changed margin to position on the left */
+  margin: 30px auto 30px 120px;
   border: 5px solid rgb(67, 28, 2);
   border-radius: 15px;
   box-shadow: 0px 4px 10px rgba(10, 9, 9, 0.5);
@@ -187,14 +186,6 @@ const Image = styled.img`
   object-fit: cover;
 `;
 
-
-
-// Configuration axios globale
-axios.defaults.baseURL = 'http://localhost:8000';
-axios.defaults.withCredentials = true; // Important pour les cookies de session et CSRF
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-axios.defaults.headers.common['Accept'] = 'application/json';
-
 const SignUp = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -205,89 +196,38 @@ const SignUp = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Fetch CSRF token on component mount
-    const fetchCsrfToken = async () => {
-      try {
-        await axios.get('/sanctum/csrf-cookie');
-        console.log('CSRF cookie set successfully');
-      } catch (err) {
-        console.error('Error setting CSRF cookie:', err);
-        setError('Problème de connexion au serveur. Veuillez réessayer.');
-      }
-    };
-    
-    fetchCsrfToken();
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Formulaire d'inscription soumis");
     setError("");
     setLoading(true);
-  
+
     try {
-      // Ensure we get a fresh CSRF token before submission
-      await axios.get('/sanctum/csrf-cookie');
+      // Utiliser la même fonction register que pour le login
+      const userData = {
+        username_u: username,
+        password_u: password,
+        email: email,
+        birthday_u: dob,
+      };
+
+      console.log("Tentative d'inscription avec:", userData);
       
-      // const response = await axios.post('/api/register', {
-      //   username_u: username,
-      //   password_u: password,
-      //   email: email,
-      //   birthday_u: dob,
-      // }, {
-      //   withCredentials: true // 🔥 OBLIGATOIRE ici
-      // });
-      
-      const response = await axios.post(
-        'http://localhost:8000/api/register',
-        {
-          username_u: username,
-          password_u: password,
-          email: email,
-          birthday_u: dob
-        },
-        {
-          withCredentials: true, // 🔥 CRUCIAL
-          headers: {
-            'X-XSRF-TOKEN': decodeURIComponent(
-              document.cookie
-                .split('; ')
-                .find(row => row.startsWith('XSRF-TOKEN='))
-                ?.split('=')[1] || ''
-            ),
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
-        }
-      );
-      
-  
-      console.log('Registration response:', response);
-      
-      // if (response.data.success) {
-      //   alert("Compte créé avec succès!");
-      //   navigate('/login');
-      // } else {
-      //   setError(response.data.message || "Une erreur est survenue lors de l'inscription");
-      // }
-      if (response?.data?.success) {
-        console.log("Inscription réussie :", response.data);
+      const result = await register(userData);
+      console.log("Résultat de register():", result);
+
+      if (result.success) {
         alert("Compte créé avec succès!");
         navigate('/login');
       } else {
-        setError(response.data?.message || "Erreur inconnue lors de l'inscription");
+        setError(result.message || "Une erreur est survenue lors de l'inscription");
       }
       
     } catch (error) {
       console.error("Erreur détaillée lors de l'inscription:", error);
+      console.log("Response data:", error.response?.data);
       
-      // Log détaillé pour le débogage
       if (error.response) {
-        console.log("Status:", error.response.status);
-        console.log("Data:", error.response.data);
-        console.log("Headers:", error.response.headers);
-        
-        // Message d'erreur plus spécifique pour CSRF
         if (error.response.status === 419) {
           setError("Erreur de sécurité CSRF. Veuillez rafraîchir la page et réessayer.");
         } else {
@@ -309,7 +249,7 @@ const SignUp = () => {
     <AuthContainer>
       <FrameContainer>
         <ImageContainer>
-   <Image src="/meal1.jpg" alt="Meal 1" />
+          <Image src="/meal1.jpg" alt="Meal 1" />
           <Image src="/meal2.jpg" alt="Meal 2" />
           <Image src="/meal3.jpg" alt="Meal 3" />
           <Image src="/meal4.jpg" alt="Meal 4" />

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getCsrfToken, instance } from '../services/api';
 
-
 // Configure axios to include CSRF token
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -29,13 +28,62 @@ const ReportedPosts = () => {
   const fetchReports = async () => {
     try {
       setLoading(true);
-      // Using the endpoint from your controller
-      const response = await axios.get('/api/reports');
-      setReports(response.data);
-      setLoading(false);
+      
+      // Utiliser l'URL complète avec les headers appropriés
+      const response = await axios.get('http://localhost:8000/api/reports', {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      });
+      
+      // Debug: afficher la structure des données reçues
+      console.log('Données reports reçues:', response.data);
+      console.log('Type de données reports:', typeof response.data);
+      
+      // Vérifier si la réponse est du HTML (erreur de routage)
+      if (typeof response.data === 'string' && response.data.includes('<!doctype html>')) {
+        throw new Error('L\'API /api/reports retourne du HTML au lieu de JSON - vérifiez la route sur votre serveur Laravel');
+      }
+      
+      // Vérifier si les données sont dans response.data directement ou dans une propriété
+      let reportsData = response.data;
+      
+      // Si les données sont encapsulées dans un objet
+      if (reportsData && typeof reportsData === 'object' && !Array.isArray(reportsData)) {
+        const possibleKeys = ['reports', 'data', 'items', 'results'];
+        for (const key of possibleKeys) {
+          if (Array.isArray(reportsData[key])) {
+            reportsData = reportsData[key];
+            break;
+          }
+        }
+      }
+      
+      // S'assurer que reportsData est un tableau
+      if (!Array.isArray(reportsData)) {
+        console.error('Les données reports reçues ne sont pas un tableau:', reportsData);
+        throw new Error('Format de données invalide reçu de l\'API reports');
+      }
+      
+      setReports(reportsData);
+      setErrorMessage(''); // Clear any previous errors
     } catch (error) {
       console.error('Erreur lors de la récupération des signalements:', error);
-      setErrorMessage('Impossible de récupérer les signalements');
+      
+      if (error.message.includes('HTML au lieu de JSON')) {
+        setErrorMessage('Erreur de configuration API - Route /api/reports introuvable');
+      } else if (error.response && error.response.status === 404) {
+        setErrorMessage('Route API /api/reports non trouvée - vérifiez votre serveur Laravel');
+      } else if (error.response && error.response.status === 500) {
+        setErrorMessage('Erreur serveur - vérifiez les logs Laravel');
+      } else {
+        setErrorMessage('Impossible de récupérer les signalements');
+      }
+      
+      setReports([]); // S'assurer que reports reste un tableau même en cas d'erreur
+    } finally {
       setLoading(false);
     }
   };
@@ -56,71 +104,67 @@ const ReportedPosts = () => {
   };
 
   // Version modifiée avec instance axios de votre API
-const handleDeletePost = async (reportId) => {
-  if (!reportId) {
-    setErrorMessage('ID de signalement manquant');
-    return;
-  }
-  
-  if (window.confirm('Êtes-vous sûr de vouloir supprimer ce post? Cette action est irréversible.')) {
-    try {
-      setLoading(true);
-      
-      // 1. Récupérer d'abord le cookie CSRF
-      await getCsrfToken();
-      
-      // 2. Récupérer le token depuis le cookie
-      const getXsrfToken = () => {
-        const token = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('XSRF-TOKEN='))
-          ?.split('=')[1];
-        
-        return token ? decodeURIComponent(token) : null;
-      };
-      
-      const token = getXsrfToken();
-      
-      console.log("Token CSRF récupéré:", token ? "Oui" : "Non"); // Pour debug
-      
-      if (!token) {
-        setErrorMessage('Token CSRF non disponible');
-        setLoading(false);
-        return;
-      }
-      
-      // 3. Utiliser l'instance axios configurée dans api.js
-      // Importer l'instance de axios de votre fichier api.js
-      // import { instance } from '../services/api';
-      
-      // Utiliser instance au lieu d'axios directement
-      const response = await instance.post(`/api/reports/${reportId}/delete`, {}, {
-        headers: {
-          'X-XSRF-TOKEN': token
-        }
-      });
-      
-      if (response.data.success) {
-        setSuccessMessage('Post supprimé avec succès!');
-        setReports(reports.filter(report => report.report_id !== reportId));
-        setTimeout(() => {
-          setShowModal(false);
-          setSuccessMessage('');
-        }, 2000);
-      } else {
-        setErrorMessage(response.data.message || 'Échec de la suppression');
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error('Erreur lors de la suppression du post:', reportId, error);
-      console.log("Détails de la réponse:", error.response ? error.response.data : "Pas de détails");
-      setErrorMessage(`Erreur lors de la suppression du post: ${error.response?.status || error.message}`);
-      setLoading(false);
+  const handleDeletePost = async (reportId) => {
+    if (!reportId) {
+      setErrorMessage('ID de signalement manquant');
+      return;
     }
-  }
-};
-  
-const getImageUrl = (imagePath) => {
+    
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce post? Cette action est irréversible.')) {
+      try {
+        setLoading(true);
+        
+        // 1. Récupérer d'abord le cookie CSRF
+        await getCsrfToken();
+        
+        // 2. Récupérer le token depuis le cookie
+        const getXsrfToken = () => {
+          const token = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('XSRF-TOKEN='))
+            ?.split('=')[1];
+          
+          return token ? decodeURIComponent(token) : null;
+        };
+        
+        const token = getXsrfToken();
+        
+        console.log("Token CSRF récupéré:", token ? "Oui" : "Non"); // Pour debug
+        
+        if (!token) {
+          setErrorMessage('Token CSRF non disponible');
+          setLoading(false);
+          return;
+        }
+        
+        // 3. Utiliser l'instance axios configurée dans api.js
+        const response = await instance.post(`/api/reports/${reportId}/delete`, {}, {
+          headers: {
+            'X-XSRF-TOKEN': token
+          }
+        });
+        
+        if (response.data.success) {
+          setSuccessMessage('Post supprimé avec succès!');
+          setReports(reports.filter(report => report.report_id !== reportId));
+          setTimeout(() => {
+            setShowModal(false);
+            setSuccessMessage('');
+          }, 2000);
+        } else {
+          setErrorMessage(response.data.message || 'Échec de la suppression');
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Erreur lors de la suppression du post:', reportId, error);
+        console.log("Détails de la réponse:", error.response ? error.response.data : "Pas de détails");
+        setErrorMessage(`Erreur lors de la suppression du post: ${error.response?.status || error.message}`);
+        setLoading(false);
+      }
+    }
+  };
+    
+  const getImageUrl = (imagePath) => {
     if (!imagePath) return null
     // If the path already includes http, assume it's a full URL
     if (imagePath.startsWith("http")) return imagePath
@@ -128,66 +172,65 @@ const getImageUrl = (imagePath) => {
     return `http://localhost:8000/uploads/${imagePath}`
   }
 
-
-const handleIgnoreReport = async (reportId) => {
-  if (!reportId) {
-    setErrorMessage('ID de signalement manquant');
-    return;
-  }
-
-  if (window.confirm('Êtes-vous sûr de vouloir ignorer ce signalement?')) {
-    try {
-      setLoading(true);
-      
-      // 1. Récupérer d'abord le cookie CSRF
-      await getCsrfToken();
-      
-      // 2. Récupérer le token depuis le cookie
-      const getXsrfToken = () => {
-        const token = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('XSRF-TOKEN='))
-          ?.split('=')[1];
-        
-        return token ? decodeURIComponent(token) : null;
-      };
-      
-      const token = getXsrfToken();
-      
-      console.log("Token CSRF récupéré pour ignore:", token ? "Oui" : "Non"); // Pour debug
-      
-      if (!token) {
-        setErrorMessage('Token CSRF non disponible');
-        setLoading(false);
-        return;
-      }
-      
-      // 3. Utiliser l'instance axios configurée dans api.js avec le token CSRF
-      const response = await instance.post(`/api/reports/${reportId}/ignore`, {}, {
-        headers: {
-          'X-XSRF-TOKEN': token
-        }
-      });
-      
-      if (response.data.success) {
-        setSuccessMessage('Signalement ignoré avec succès!');
-        setReports(reports.filter(report => report.report_id !== reportId));
-        setTimeout(() => {
-          setShowModal(false);
-          setSuccessMessage('');
-        }, 2000);
-      } else {
-        setErrorMessage(response.data.message || 'Échec de l\'opération');
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error('Erreur lors de l\'ignorance du signalement:', error);
-      console.log("Détails de la réponse:", error.response ? error.response.data : "Pas de détails");
-      setErrorMessage(`Erreur lors de l'ignorance du signalement: ${error.response?.status || error.message}`);
-      setLoading(false);
+  const handleIgnoreReport = async (reportId) => {
+    if (!reportId) {
+      setErrorMessage('ID de signalement manquant');
+      return;
     }
-  }
-};
+
+    if (window.confirm('Êtes-vous sûr de vouloir ignorer ce signalement?')) {
+      try {
+        setLoading(true);
+        
+        // 1. Récupérer d'abord le cookie CSRF
+        await getCsrfToken();
+        
+        // 2. Récupérer le token depuis le cookie
+        const getXsrfToken = () => {
+          const token = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('XSRF-TOKEN='))
+            ?.split('=')[1];
+          
+          return token ? decodeURIComponent(token) : null;
+        };
+        
+        const token = getXsrfToken();
+        
+        console.log("Token CSRF récupéré pour ignore:", token ? "Oui" : "Non"); // Pour debug
+        
+        if (!token) {
+          setErrorMessage('Token CSRF non disponible');
+          setLoading(false);
+          return;
+        }
+        
+        // 3. Utiliser l'instance axios configurée dans api.js avec le token CSRF
+        const response = await instance.post(`/api/reports/${reportId}/ignore`, {}, {
+          headers: {
+            'X-XSRF-TOKEN': token
+          }
+        });
+        
+        if (response.data.success) {
+          setSuccessMessage('Signalement ignoré avec succès!');
+          setReports(reports.filter(report => report.report_id !== reportId));
+          setTimeout(() => {
+            setShowModal(false);
+            setSuccessMessage('');
+          }, 2000);
+        } else {
+          setErrorMessage(response.data.message || 'Échec de l\'opération');
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Erreur lors de l\'ignorance du signalement:', error);
+        console.log("Détails de la réponse:", error.response ? error.response.data : "Pas de détails");
+        setErrorMessage(`Erreur lors de l'ignorance du signalement: ${error.response?.status || error.message}`);
+        setLoading(false);
+      }
+    }
+  };
 
   return (
     <div className="reported-posts-card">
@@ -195,6 +238,27 @@ const handleIgnoreReport = async (reportId) => {
         <h3>Postes Signalés</h3>
       </div>
       <div className="reported-posts-body">
+        {/* Show error message if there's a fetch error */}
+        {errorMessage && !loading && (
+          <div className="error-message">
+            {errorMessage}
+            <button 
+              onClick={fetchReports}
+              style={{
+                backgroundColor: '#8b0000',
+                color: 'white',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                marginLeft: '10px'
+              }}
+            >
+              Réessayer
+            </button>
+          </div>
+        )}
+        
         {loading ? (
           <div className="loading-spinner">
             <div className="spinner"></div>
@@ -212,13 +276,13 @@ const handleIgnoreReport = async (reportId) => {
               </tr>
             </thead>
             <tbody>
-              {reports.length > 0 ? (
+              {Array.isArray(reports) && reports.length > 0 ? (
                 reports.map((report) => (
                   <tr key={report.report_id}>
                     <td>{report.report_id}</td>
                     <td>{report.post_title}</td>
                     <td>{report.reported_by}</td>
-                    <td>{new Date(report.reported_at).toLocaleDateString()}</td>
+                    <td>{report.reported_at ? new Date(report.reported_at).toLocaleDateString() : 'N/A'}</td>
                     <td>
                       <button 
                         className="details-btn"
@@ -297,7 +361,7 @@ const handleIgnoreReport = async (reportId) => {
                   </div>
                   <div><span className="details-label">Raison du signalement:</span> <span>{selectedReport.description || 'Non spécifiée'}</span></div>
                   <div><span className="details-label">Signalé par:</span> <span>{selectedReport.reported_by || 'Anonyme'}</span></div>
-                  <div><span className="details-label">Date:</span> <span>{new Date(selectedReport.reported_at).toLocaleString()}</span></div>
+                  <div><span className="details-label">Date:</span> <span>{selectedReport.reported_at ? new Date(selectedReport.reported_at).toLocaleString() : 'N/A'}</span></div>
                 </div>
               </div>
               <div className="modal-footer">
@@ -324,7 +388,7 @@ const handleIgnoreReport = async (reportId) => {
         )}
       </div>
 
-      <style >{`
+      <style>{`
         .reported-posts-card {
           background: white;
           border-radius: 8px;
